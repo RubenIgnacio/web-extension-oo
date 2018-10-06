@@ -15,10 +15,10 @@ StorageManager.StorageArea = {LOCAL: "local", SYNC: "sync", MANAGED: "managed"};
 StorageManager.prototype.setDefaultStorageArea = function(newDefaultStorageArea = StorageManager.StorageArea.LOCAL) {
   var storageAreas = Object.values(StorageManager.StorageArea);
   if (!storageAreas.includes(newDefaultStorageArea))
-    throw new RangeError("Storage area '" + newDefaultStorageArea + "' is invalid.");
+    throw new Error("Storage area '" + newDefaultStorageArea + "' is invalid.");
 
   if (!this.browserStorage[newDefaultStorageArea])
-    throw new RangeError("Your browser does not support 'Storage." + newDefaultStorageArea + "'.");
+    throw new Error("Your browser does not support 'Storage." + newDefaultStorageArea + "'.");
   this.defaultStorageArea = newDefaultStorageArea;
   this.getStorage();
 };
@@ -26,11 +26,11 @@ StorageManager.prototype.setDefaultStorageArea = function(newDefaultStorageArea 
 StorageManager.prototype.getStorage = function(storageArea = this.defaultStorageArea) {
   var storageAreas = Object.values(StorageManager.StorageArea);
   if (!storageAreas.includes(storageArea))
-    throw new RangeError("Storage area '" + storageArea + "' is invalid.");
+    throw new Error("Storage area '" + storageArea + "' is invalid.");
 
   var storage = this.browserStorage[storageArea];
   if (!storage)
-    throw new RangeError("Your browser does not support 'Storage." + storageArea + "'.");
+    throw new Error("Your browser does not support 'Storage." + storageArea + "'.");
   return storage;
 };
 
