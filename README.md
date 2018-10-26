@@ -1,3 +1,4 @@
+
 # WebExtensionLibs
 
 ## StorageManager
@@ -30,7 +31,7 @@ var storageSync = new StorageManager('sync');
 
 ```javascript
 // crea una instancia para la notificación.
-var notification = new NotificationManager("notifiId", {
+var notification = new NotificationManager('notifiId', {
   title: 'Saludo',
   message: 'Hola mundo',
   iconUrl: 'url_de_la_imgen' // Opcional en Firefox.
@@ -51,10 +52,24 @@ notification.message; // regresa 'Adiós'.
 Si no especifica el id de la notificación al crear la instancia o después de crearla, se usara el título como id de la notificación.
 
 ```javascript
-notification = new NotificationManager(null, {title: 'Saludo', message: "Hola mundo"});
+notification = new NotificationManager(null, {title: 'Saludo', message: 'Hola mundo'});
 notification.id // regresa 'Saludo'.
 ```
 
+## WindowManager
+```javascript
+var winId;
+// abre una ventana nueva
+WindowManager.open({
+  url: 'https://www.google.com/',
+  type: 'normal',
+  state: 'maximized'
+}).then((winInf) => winId = winInf.id);
+// cierra la ventana después de 3 segundos
+setTimeout(() => {
+  WindowManager.get(winId).then((winInf) => winInf.close());
+}, 3000);
+```
 ## License
 
 [MIT License](https://opensource.org/licenses/MIT).
