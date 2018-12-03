@@ -44,6 +44,8 @@ StorageManager.prototype.getStorageMethod = function(name, storageArea = this.de
   var storageMethod = this.getStorage(storageArea)[name];
   if (!storageMethod)
     throw new Error("Your browser does not support 'Storage." + storageArea + "." + name + "()'.");
+  else if (typeof(storageMethod) !== "function")
+    throw new Error("'Storage." + name + "' is not a function");
   return function() {
     if (window.browser)
       return storageMethod.apply(null, arguments);

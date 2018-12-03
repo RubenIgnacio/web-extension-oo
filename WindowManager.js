@@ -42,6 +42,8 @@ WindowManager.getWindowMethod = function(name) {
   var windowMethod = WindowManager.browserWindows[name];
   if (!windowMethod)
     throw new Error("Your browser does not support 'Windows." + name + "()'.");
+  else if (typeof(windowMethod) !== "function")
+    throw new Error("'Windows." + name + "' is not a function");
   return function() {
     if (window.browser)
       return windowMethod.apply(null, arguments);

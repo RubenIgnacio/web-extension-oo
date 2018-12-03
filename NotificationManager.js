@@ -54,6 +54,8 @@ NotificationManager.getNotificationMethod = function(name) {
   var notificationMethod = NotificationManager.browserNotifications[name];
   if (!notificationMethod)
     throw new Error("Your browser does not support 'Notifications." + name + "()'.");
+  else if (typeof(notificationMethod) !== "function")
+    throw new Error("'Notifications." + name + "' is not a function");
   return function() {
     if (window.browser)
       return notificationMethod.apply(null, arguments);
