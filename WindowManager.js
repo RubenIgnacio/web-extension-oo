@@ -2,11 +2,7 @@ function WindowManager(windowInfo) {
   if (!(this instanceof WindowManager))
     return new WindowManager(windowInfo);
 
-  Object.defineProperty(this, "browserWindows", {
-    enumerable: true,
-    value: WindowManager.browserWindows
-  });
-
+  this.browserWindows = WindowManager.browserWindows;
   if (!this.browserWindows)
     throw new Error("Your browser does not support windows.");
 
@@ -31,10 +27,7 @@ function WindowManager(windowInfo) {
   }, this);
 }
 
-Object.defineProperty(WindowManager, "browserWindows", {
-  enumerable: true,
-  value: (window.browser || window.chrome).windows
-});
+WindowManager.browserWindows = (window.browser || window.chrome).windows;
 
 WindowManager.WindowType = WindowManager.browserWindows.WindowType;
 

@@ -2,11 +2,7 @@ function NotificationManager(id, notifiOptions) {
   if (!(this instanceof NotificationManager))
     return new NotificationManager(id, notifiOptions);
 
-  this.accessorProperty("browserNotifications", {
-    configurable: false,
-    writable: false,
-    value: NotificationManager.browserNotifications
-  });
+  this.browserNotifications = NotificationManager.browserNotifications;
   if (!this.browserNotifications)
     throw new Error("Your browser does not support notifications.");
 
@@ -39,10 +35,7 @@ function NotificationManager(id, notifiOptions) {
   this.id = id;
 }
 
-Object.defineProperty(NotificationManager, "browserNotifications", {
-  enumerable: true,
-  value: (window.browser || window.chrome).notifications
-});
+NotificationManager.browserNotifications = (window.browser || window.chrome).notifications;
 
 NotificationManager.TemplateType = NotificationManager.browserNotifications.TemplateType;
 

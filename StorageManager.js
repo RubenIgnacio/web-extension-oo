@@ -2,19 +2,14 @@ function StorageManager(defaultStorageArea) {
   if (!(this instanceof StorageManager))
     return new StorageManager(defaultStorageArea);
 
-  Object.defineProperty(this, "browserStorage", {
-    enumerable: true,
-    value: StorageManager.browserStorage
-  });
+  this.browserStorage = StorageManager.browserStorage;
   if (!this.browserStorage)
     throw new Error("Your browser does not support storage.");
+
   this.setDefaultStorageArea(defaultStorageArea);
 }
 
-Object.defineProperty(StorageManager, "browserStorage", {
-  enumerable: true,
-  value: (window.browser || window.chrome).storage
-});
+StorageManager.browserStorage = (window.browser || window.chrome).storage;
 
 StorageManager.StorageArea = {LOCAL: "local", SYNC: "sync", MANAGED: "managed"};
 
