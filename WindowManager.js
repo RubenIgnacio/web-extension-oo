@@ -6,6 +6,10 @@ function WindowManager(windowInfo) {
     enumerable: true,
     value: WindowManager.browserWindows
   });
+
+  if (!this.browserWindows)
+    throw new Error("Your browser does not support windows.");
+
   var windowProps = [
     "alwaysOnTop",
     "focused",
