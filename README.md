@@ -1,5 +1,11 @@
 # WebExtensionLibs
 
+* [StorageManager](#storagemanager)
+* [NotificationManager](#notificationmanager)
+* [WindowManager](#windowmanager)
+* [Alarm](#alarm)
+* [License](#license)
+
 ## StorageManager
 
 ```javascript
