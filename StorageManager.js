@@ -14,14 +14,8 @@ StorageManager.browserStorage = (window.browser || window.chrome).storage;
 StorageManager.StorageArea = {LOCAL: "local", SYNC: "sync", MANAGED: "managed"};
 
 StorageManager.prototype.setDefaultStorageArea = function(newDefaultStorageArea = StorageManager.StorageArea.LOCAL) {
-  var storageAreas = Object.values(StorageManager.StorageArea);
-  if (!storageAreas.includes(newDefaultStorageArea))
-    throw new Error("Storage area '" + newDefaultStorageArea + "' is invalid.");
-
-  if (!this.browserStorage[newDefaultStorageArea])
-    throw new Error("Your browser does not support 'Storage." + newDefaultStorageArea + "'.");
+  this.getStorage(newDefaultStorageArea);
   this.defaultStorageArea = newDefaultStorageArea;
-  this.getStorage();
 };
 
 StorageManager.prototype.getStorage = function(storageArea = this.defaultStorageArea) {
