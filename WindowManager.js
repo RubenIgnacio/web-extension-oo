@@ -98,6 +98,14 @@ WindowManager.get = function(windowId, getInfo) {
   };
 });
 
+WindowManager.addEventListener = function(type, listener) {
+  type = "on" + type[0].toUpperCase() + type.substring(1);
+  var event = WindowManager.browserWindows[type];
+  if (!event)
+    throw new Error("Your browser does not support '" + type + "' event.");
+  event.addListener(listener);
+};
+
 WindowManager.prototype.getWindowMethod = WindowManager.getWindowMethod;
 
 WindowManager.prototype.update = function(updateInfo) {

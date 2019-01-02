@@ -98,6 +98,14 @@ NotificationManager.getOptionsOf = function(type) {
   };
 });
 
+NotificationManager.addEventListener = function(type, listener) {
+  type = "on" + type[0].toUpperCase() + type.substring(1);
+  var event = NotificationManager.browserNotifications[type];
+  if (!event)
+    throw new Error("Your browser does not support '" + type + "' event.");
+  event.addListener(listener);
+};
+
 NotificationManager.prototype.accessorProperty = function(propName, descriptor) {
   if (!descriptor) descriptor = {writable: true};
 

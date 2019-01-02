@@ -13,6 +13,16 @@ StorageManager.browserStorage = (window.browser || window.chrome).storage;
 
 StorageManager.StorageArea = {LOCAL: "local", SYNC: "sync", MANAGED: "managed"};
 
+StorageManager.addEventListener = function(type, listener) {
+  type = "on" + type[0].toUpperCase() + type.substring(1);
+  var event = StorageManager.browserStorage[type];
+  if (!event)
+    throw new Error("Your browser does not support '" + type + "' event.");
+  event.addListener(listener);
+};
+
+StorageManager.prototype.addEventListener = StorageManager.addEventListener;
+
 StorageManager.prototype.setDefaultStorageArea = function(newDefaultStorageArea = StorageManager.StorageArea.LOCAL) {
   this.getStorage(newDefaultStorageArea);
   this.defaultStorageArea = newDefaultStorageArea;
@@ -35,6 +45,7 @@ StorageManager.prototype.getStorageMethod = function(name, storageArea = this.de
     throw new Error("Your browser does not support 'Storage." + storageArea + "." + name + "()'.");
   else if (typeof(storageMethod) !== "function")
     throw new Error("'Storage." + name + "' is not a function");
+
   return function() {
     if (window.browser)
       return storageMethod.apply(null, arguments);
