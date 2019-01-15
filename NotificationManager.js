@@ -49,6 +49,7 @@ NotificationManager.getNotificationMethod = function(name) {
     throw new Error("Your browser does not support 'Notifications." + name + "()'.");
   else if (typeof(notificationMethod) !== "function")
     throw new Error("'Notifications." + name + "' is not a function");
+
   return function() {
     if (window.browser)
       return notificationMethod.apply(null, arguments);
@@ -93,9 +94,7 @@ NotificationManager.getOptionsOf = function(type) {
 };
 
 ["getAll", "getPermissionLevel"].forEach(function(methodName) {
-  NotificationManager[methodName] = function() {
-    return NotificationManager.getNotificationMethod(methodName)();
-  };
+  NotificationManager[methodName] = NotificationManager.getNotificationMethod(methodName);
 });
 
 NotificationManager.addEventListener = function(type, listener) {
@@ -122,12 +121,9 @@ NotificationManager.prototype.getNotificationMethod = function(name) {
   var notificationMethod = NotificationManager.getNotificationMethod(name);
   var notificationId = this.id;
   return function() {
-    var args = arguments;
-    return new Promise(function(resolve, reject) {
-      notificationMethod.apply(null, args).then(resolve, function(error) {
-        error.notificationId = notificationId;
-        reject(error);
-      });
+    return notificationMethod.apply(null, arguments).catch(function(error) {
+      error.notificationId = notificationId;
+      throw error;
     });
   };
 };
@@ -150,25 +146,23 @@ NotificationManager.prototype.display = function(options, action = "create") {
     if (thisNotifi[opt] != undefined)
       notifiOptions[opt] = thisNotifi[opt];
   });
+  // verifica si hay una notificación anterior que aun no haya sido limpiada
+  if (this.clearedId) window.clearTimeout(this.clearedId);
   return new Promise(function(resolve, reject) {
-    // verifica si hay una notificación anterior que aun no haya sido limpiada
-    if (thisNotifi.clearedId) window.clearTimeout(thisNotifi.clearedId);
     thisNotifi.getNotificationMethod(action)(thisNotifi.id, notifiOptions).then(function(notifiIdOrWasUpdated) {
       resolve(notifiIdOrWasUpdated);
-      // limpia la notificación despues de 3 segundos
+      // limpia la notificación despues de 4 segundos
       thisNotifi.clearedId = window.setTimeout(function() {
         thisNotifi.clear();
-      }, 3E3);
+      }, 4E3);
     }, reject);
   });
 };
 
 NotificationManager.prototype.clear = function() {
   var thisNotifi = this;
-  return new Promise(function(resolve, reject) {
-    thisNotifi.getNotificationMethod("clear")(thisNotifi.id).then(function(wasCleared) {
-      thisNotifi.clearedId = null;
-      resolve(wasCleared);
-    }, reject);
+  this.getNotificationMethod("clear")(this.id).then(function(wasCleared) {
+    thisNotifi.clearedId = null;
+    return wasCleared;
   });
 };
