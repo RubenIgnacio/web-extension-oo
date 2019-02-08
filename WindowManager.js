@@ -45,7 +45,7 @@ WindowManager.getWindowMethod = function(name) {
     if (window.browser)
       return windowMethod.apply(null, arguments);
     else {
-      var args = Array.prototype.slice.call(arguments);
+      var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
         function callback() {
           var runtimeError = chrome.runtime.lastError;

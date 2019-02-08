@@ -50,7 +50,7 @@ StorageManager.prototype.getStorageMethod = function(name, storageArea = this.de
     if (window.browser)
       return storageMethod.apply(null, arguments);
     else {
-      var args = Array.prototype.slice.call(arguments);
+      var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
         function callback() {
           var runtimeError = chrome.runtime.lastError;
