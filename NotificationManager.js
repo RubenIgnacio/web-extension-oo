@@ -1,38 +1,42 @@
-function NotificationManager(id, notifiOptions) {
+function NotificationManager(notificationId, options) {
   if (!(this instanceof NotificationManager))
-    return new NotificationManager(id, notifiOptions);
+    return new NotificationManager(notificationId, options);
 
   this.browserNotifications = NotificationManager.browserNotifications;
   if (!this.browserNotifications)
     throw new Error("Your browser does not support notifications.");
 
-  var definePropertyWithDefaultValue = (function(propName, defaultPropName, objDefault) {
+  if (!notificationId && (!options || !options.title))
+    throw new Error("You have not specified an 'id' or 'title' for the notification, you must specify at least one of them.");
+
+  function definePropertyWithDefaultValue(propName, defaultPropName) {
     var __propName__ = "__" + propName + "__";
-    if (!objDefault) objDefault = this;
 
     Object.defineProperty(this, __propName__, {writable: true});
+
     this.accessorProperty(propName, {
-      configurable: false,
       get: function() {
-        return this[__propName__] || objDefault[defaultPropName];
+        return this[__propName__] || defaultPropName;
       },
       set: function(newVal) {
-        this[__propName__] = newVal || objDefault[defaultPropName];
+        this[__propName__] = newVal;
       }
     });
-  }).bind(this);
+  }
 
-  definePropertyWithDefaultValue("id", "title");
-  definePropertyWithDefaultValue("iconUrl", "defaultIconUrl");
-  definePropertyWithDefaultValue("type", "defaultType", NotificationManager);
-  definePropertyWithDefaultValue("defaultIconUrl", "defaultIconUrl", NotificationManager);
-
-  if (typeof(notifiOptions) !== "object") notifiOptions = {};
-
-  for (let opt in notifiOptions)
-    this[opt] = notifiOptions[opt];
-
-  this.id = id;
+  definePropertyWithDefaultValue.call(this, "type", NotificationManager.defaultType);
+  definePropertyWithDefaultValue.call(this, "defaultIconUrl", NotificationManager.defaultIconUrl);
+  if (typeof(options) === "object") {
+    for (let opt in options) {
+      if (opt === "id" || opt === "iconUrl")
+        this["__" + opt + "__"] = options[opt];
+      else
+        this[opt] = options[opt];
+    }
+  }
+  definePropertyWithDefaultValue.call(this, "id", this.title);
+  definePropertyWithDefaultValue.call(this, "iconUrl", this.defaultIconUrl);
+  this.id = notificationId;
 }
 
 NotificationManager.browserNotifications = (window.browser || window.chrome).notifications;
@@ -56,14 +60,13 @@ NotificationManager.getNotificationMethod = function(name) {
     else {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
-        function callback() {
+        args.push(function() {
           var runtimeError = chrome.runtime.lastError;
           if (runtimeError)
             reject(runtimeError);
           else
             resolve.apply(null, arguments);
-        }
-        args.push(callback);
+        });
         notificationMethod.apply(null, args);
       });
     }
@@ -93,9 +96,9 @@ NotificationManager.getOptionsOf = function(type) {
   return listOptions;
 };
 
-["getAll", "getPermissionLevel"].forEach(function(methodName) {
+for (let methodName of ["getAll", "getPermissionLevel"]) {
   NotificationManager[methodName] = NotificationManager.getNotificationMethod(methodName);
-});
+}
 
 NotificationManager.addEventListener = function(type, listener) {
   type = "on" + type[0].toUpperCase() + type.substring(1);
@@ -133,23 +136,24 @@ NotificationManager.prototype.display = function(options, action = "create") {
     throw new Error("The expected values were 'create' or 'update'.");
 
   var listOpts = NotificationManager.getOptionsOf(this.type);
-  var notifiOptions = {type: this.type};
+  var notificationOptions = {type: this.type};
   var thisNotifi = this;
 
-  // cambia o agrega las propiedades que esten en 'listOpts'
-  for (let opt in options) {
-    if (listOpts.includes(opt))
+  for (let opt of listOpts) {
+    // cambia o agrega las propiedades que esten en 'listOpts'
+    if (options && options[opt] != undefined)
       this[opt] = options[opt];
+
+    // agrega las opciones validas para segun el tipo de notificación
+    if (this[opt] != undefined)
+      notificationOptions[opt] = this[opt];
   }
-  // agrega las opciones validas para la notificación
-  listOpts.forEach(function(opt) {
-    if (thisNotifi[opt] != undefined)
-      notifiOptions[opt] = thisNotifi[opt];
-  });
   // verifica si hay una notificación anterior que aun no haya sido limpiada
   if (this.clearedId) window.clearTimeout(this.clearedId);
   return new Promise(function(resolve, reject) {
-    thisNotifi.getNotificationMethod(action)(thisNotifi.id, notifiOptions).then(function(notifiIdOrWasUpdated) {
+    thisNotifi.getNotificationMethod(action)(thisNotifi.id, notificationOptions)
+      .then(function(notifiIdOrWasUpdated) {
+
       resolve(notifiIdOrWasUpdated);
       // limpia la notificación despues de 4 segundos
       thisNotifi.clearedId = window.setTimeout(function() {
