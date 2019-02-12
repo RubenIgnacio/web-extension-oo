@@ -1,8 +1,8 @@
-function NotificationManager(notificationId, options) {
-  if (!(this instanceof NotificationManager))
-    return new NotificationManager(notificationId, options);
+function Notification(notificationId, options) {
+  if (!(this instanceof Notification))
+    return new Notification(notificationId, options);
 
-  this.browserNotifications = NotificationManager.browserNotifications;
+  this.browserNotifications = Notification.browserNotifications;
   if (!this.browserNotifications)
     throw new Error("Your browser does not support notifications.");
 
@@ -24,8 +24,8 @@ function NotificationManager(notificationId, options) {
     });
   }
 
-  definePropertyWithDefaultValue.call(this, "type", NotificationManager.defaultType);
-  definePropertyWithDefaultValue.call(this, "defaultIconUrl", NotificationManager.defaultIconUrl);
+  definePropertyWithDefaultValue.call(this, "type", Notification.defaultType);
+  definePropertyWithDefaultValue.call(this, "defaultIconUrl", Notification.defaultIconUrl);
   if (typeof(options) === "object") {
     for (let opt in options) {
       if (opt === "id" || opt === "iconUrl")
@@ -39,16 +39,16 @@ function NotificationManager(notificationId, options) {
   this.id = notificationId;
 }
 
-NotificationManager.browserNotifications = (window.browser || window.chrome).notifications;
+Notification.browserNotifications = (window.browser || window.chrome).notifications;
 
-NotificationManager.TemplateType = NotificationManager.browserNotifications.TemplateType;
+Notification.TemplateType = Notification.browserNotifications.TemplateType;
 
-NotificationManager.PermissionLevel = NotificationManager.browserNotifications.PermissionLevel;
+Notification.PermissionLevel = Notification.browserNotifications.PermissionLevel;
 
-NotificationManager.defaultType = NotificationManager.TemplateType.BASIC;
+Notification.defaultType = Notification.TemplateType.BASIC;
 
-NotificationManager.getNotificationMethod = function(name) {
-  var notificationMethod = NotificationManager.browserNotifications[name];
+Notification.getNotificationMethod = function(name) {
+  var notificationMethod = Notification.browserNotifications[name];
   if (!notificationMethod)
     throw new Error("Your browser does not support 'Notifications." + name + "()'.");
   else if (typeof(notificationMethod) !== "function")
@@ -73,12 +73,12 @@ NotificationManager.getNotificationMethod = function(name) {
   };
 };
 
-NotificationManager.getOptionsOf = function(type) {
+Notification.getOptionsOf = function(type) {
   var listOptions = [];
-  var types = Object.values(NotificationManager.TemplateType);
+  var types = Object.values(Notification.TemplateType);
 
   if (types.includes(type)) {
-    var templateType = NotificationManager.TemplateType;
+    var templateType = Notification.TemplateType;
     listOptions = ["title", "message", "iconUrl", "contextMessage", "buttons"];
 
     switch (type) {
@@ -97,18 +97,18 @@ NotificationManager.getOptionsOf = function(type) {
 };
 
 for (let methodName of ["getAll", "getPermissionLevel"]) {
-  NotificationManager[methodName] = NotificationManager.getNotificationMethod(methodName);
+  Notification[methodName] = Notification.getNotificationMethod(methodName);
 }
 
-NotificationManager.addEventListener = function(type, listener) {
+Notification.addEventListener = function(type, listener) {
   type = "on" + type[0].toUpperCase() + type.substring(1);
-  var event = NotificationManager.browserNotifications[type];
+  var event = Notification.browserNotifications[type];
   if (!event)
     throw new Error("Your browser does not support '" + type + "' event.");
   event.addListener(listener);
 };
 
-NotificationManager.prototype.accessorProperty = function(propName, descriptor) {
+Notification.prototype.accessorProperty = function(propName, descriptor) {
   if (!descriptor) descriptor = {writable: true};
 
   if (descriptor.enumerable == undefined)
@@ -120,8 +120,8 @@ NotificationManager.prototype.accessorProperty = function(propName, descriptor) 
   Object.defineProperty(this, propName, descriptor);
 };
 
-NotificationManager.prototype.getNotificationMethod = function(name) {
-  var notificationMethod = NotificationManager.getNotificationMethod(name);
+Notification.prototype.getNotificationMethod = function(name) {
+  var notificationMethod = Notification.getNotificationMethod(name);
   var notificationId = this.id;
   return function() {
     return notificationMethod.apply(null, arguments).catch(function(error) {
@@ -131,11 +131,11 @@ NotificationManager.prototype.getNotificationMethod = function(name) {
   };
 };
 
-NotificationManager.prototype.display = function(options, action = "create") {
+Notification.prototype.display = function(options, action = "create") {
   if (action !== "create" && action !== "update")
     throw new Error("The expected values were 'create' or 'update'.");
 
-  var listOpts = NotificationManager.getOptionsOf(this.type);
+  var listOpts = Notification.getOptionsOf(this.type);
   var notificationOptions = {type: this.type};
   var thisNotifi = this;
 
@@ -163,7 +163,7 @@ NotificationManager.prototype.display = function(options, action = "create") {
   });
 };
 
-NotificationManager.prototype.clear = function() {
+Notification.prototype.clear = function() {
   var thisNotifi = this;
   this.getNotificationMethod("clear")(this.id).then(function(wasCleared) {
     thisNotifi.clearedId = null;

@@ -1,7 +1,7 @@
 # WebExtensionLibs
 
 * [StorageManager](#storagemanager)
-* [NotificationManager](#notificationmanager)
+* [Notification](#notification)
 * [WindowManager](#windowmanager)
 * [Alarm](#alarm)
 * [License](#license)
@@ -32,20 +32,19 @@ storage.setDefaultStorageArea('sync');
 var storageSync = new StorageManager('sync');
 ```
 
-## NotificationManager
+## Notification
 
 ```javascript
 // Crea una instancia para la notificación.
-var notification = new NotificationManager('notifiId', {
+var notification = new Notification('notifiId', {
   title: 'Saludo',
   message: 'Hola mundo',
   iconUrl: 'url_de_la_imgen' // Opcional en Firefox.
 });
 // Muestra la notificación e imprime en consola su 'id'.
 notification.display().then((notificationId) => console.log(notificationId));
-// Sin pasar argumentos al crear la instancia.
-notification = new NotificationManager();
-notification.id = 'notifiId';
+// Pasando solo el 'id' como argumento al crear la instancia.
+notification = new Notification('notifiId');
 notification.title = 'Saludo';
 notification.message = 'Hola mundo';
 /*
@@ -56,10 +55,11 @@ notification.display({message: 'Adiós'});
 notification.message; // Regresa 'Adiós'.
 ```
 
-Si no especifica el id de la notificación al crear la instancia o después de crearla, se usara el título como id de la notificación.
+Si no especifica el _id_ de la notificación al crear la instancia o después de crearla, se usara _title_ como _id_ de la notificación.
 
 ```javascript
-notification = new NotificationManager(null, {title: 'Saludo', message: 'Hola mundo'});
+// Se debe pasar como mínimo el 'id' o 'title' como argumento al crear la instancia.
+notification = new Notification(null, {title: 'Saludo', message: 'Hola mundo'});
 notification.id // Regresa 'Saludo'.
 ```
 
