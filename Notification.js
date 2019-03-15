@@ -97,7 +97,8 @@ Notification.getOptionsOf = function(type) {
 };
 
 for (let methodName of ["getAll", "getPermissionLevel"]) {
-  Notification[methodName] = Notification.getNotificationMethod(methodName);
+  if (Notification.browserNotifications[methodName])
+    Notification[methodName] = Notification.getNotificationMethod(methodName);
 }
 
 Notification.addEventListener = function(type, listener) {
