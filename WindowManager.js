@@ -62,11 +62,7 @@ WindowManager.getWindowMethod = function(name) {
 };
 
 WindowManager.open = function(createData) {
-  return new Promise(function(resolve, reject) {
-    WindowManager.getWindowMethod("create")(createData).then(function(windowInfo) {
-      resolve(new WindowManager(windowInfo));
-    }, reject);
-  });
+  return WindowManager.getWindowMethod("create")(createData).then((windowInfo) => new WindowManager(windowInfo));
 };
 
 WindowManager.getAll = function(getInfo) {
@@ -76,20 +72,12 @@ WindowManager.getAll = function(getInfo) {
 };
 
 WindowManager.get = function(windowId, getInfo) {
-  return new Promise(function(resolve, reject) {
-    WindowManager.getWindowMethod("get")(windowId, getInfo).then(function(windowInfo) {
-      resolve(new WindowManager(windowInfo));
-    }, reject);
-  });
+  return WindowManager.getWindowMethod("get")(windowId, getInfo).then((windowInfo) => new WindowManager(windowInfo));
 };
 
 ["getCurrent", "getLastFocused"].forEach(function(methodName) {
   WindowManager[methodName] = function(getInfo) {
-    return new Promise(function(resolve, reject) {
-      WindowManager.getWindowMethod(methodName)(getInfo).then(function(windowInfo) {
-        resolve(new WindowManager(windowInfo));
-      }, reject);
-    });
+    return WindowManager.getWindowMethod(methodName)(getInfo).then((windowInfo) => new WindowManager(windowInfo));
   };
 });
 
@@ -105,14 +93,12 @@ WindowManager.prototype.getWindowMethod = WindowManager.getWindowMethod;
 
 WindowManager.prototype.update = function(updateInfo) {
   var thisWindow = this;
-  return new Promise(function(resolve, reject) {
-    thisWindow.getWindowMethod("update")(thisWindow.id, updateInfo).then(function(windowInfo) {
-      for (let key in updateInfo) {
-        if (key !== "drawAttention" && key !== "titlePreface")
-          thisWindow[key] = updateInfo[key];
-      }
-      resolve(thisWindow);
-    }, reject);
+  return this.getWindowMethod("update")(this.id, updateInfo).then(function(windowInfo) {
+    for (let key in updateInfo) {
+      if (key !== "drawAttention" && key !== "titlePreface")
+        thisWindow[key] = updateInfo[key];
+    }
+    return thisWindow;
   });
 };
 
