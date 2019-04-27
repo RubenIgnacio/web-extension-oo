@@ -21,10 +21,10 @@ function WindowManager(windowInfo) {
     "type",
     "width"
   ];
-  windowProps.forEach(function(prop) {
+  for (let prop of windowProps) {
     if (windowInfo[prop] !== undefined)
       this[prop] = windowInfo[prop];
-  }, this);
+  }
 }
 
 WindowManager.browserWindows = (window.browser || window.chrome).windows;
