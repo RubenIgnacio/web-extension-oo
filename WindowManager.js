@@ -70,13 +70,8 @@ WindowManager.open = function(createData) {
 };
 
 WindowManager.getAll = function(getInfo) {
-  return new Promise(function(resolve, reject) {
-    WindowManager.getWindowMethod("getAll")(getInfo).then(function(windowInfoArray) {
-      for (let i = 0; i < windowInfoArray.length; i++)
-        windowInfoArray[i] = new WindowManager(windowInfoArray[i]);
-
-      resolve(windowInfoArray);
-    }, reject);
+  return WindowManager.getWindowMethod("getAll")(getInfo).then(function(windowInfoArray) {
+    return windowInfoArray.map((windowInfo) => new WindowManager(windowInfo));
   });
 };
 
