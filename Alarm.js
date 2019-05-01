@@ -53,10 +53,7 @@ Alarm.create = Alarm.getAlarmMethod("create", false);
 
 Alarm.getAll = function() {
   return Alarm.getAlarmMethod("getAll")().then(function(alarmsArray) {
-    alarmsArray.forEach(function (alarm, index) {
-      alarmsArray[index] = new Alarm(alarm);
-    });
-    return alarmsArray;
+    return alarmsArray.map((alarm) => new Alarm(alarm));
   });
 };
 
