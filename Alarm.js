@@ -32,17 +32,15 @@ Alarm.getAlarmMethod = function(name, useCallback = true) {
     if (window.browser || !useCallback)
       return alarmMethod.apply(null, arguments);
     else {
-      var args = Array.prototype.slice.call(arguments);
-      
+      var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
-        function callback() {
+        args.push(function() {
           var runtimeError = chrome.runtime.lastError;
           if (runtimeError)
             reject(runtimeError);
           else
             resolve.apply(null, arguments);
-        }
-        args.push(callback);
+        });
         alarmMethod.apply(null, args);
       });
     }
