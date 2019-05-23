@@ -74,5 +74,11 @@ Command.prototype.reset = function() {
 
 Command.prototype.update = function(details) {
   details.name = this.name;
-  return Command.update(details);
+  var thisCommand = this;
+  return Command.update(details).then(function() {
+    var commandProps = ['description', 'shortcut'];
+    for (let commandProp of commandProps) {
+      thisCommand[commandProp] = details[commandProp];
+    }
+  });
 };
