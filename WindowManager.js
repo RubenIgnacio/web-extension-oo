@@ -7,19 +7,10 @@ function WindowManager(windowInfo) {
     throw new Error("Your browser does not support windows.");
 
   var windowProps = [
-    "alwaysOnTop",
-    "focused",
-    "height",
-    "id",
-    "incognito",
-    "left",
-    "sessionId",
-    "state",
-    "tabs",
-    "title",
-    "top",
-    "type",
-    "width"
+    "alwaysOnTop", "focused", "height",
+    "id", "incognito", "left",
+    "sessionId", "state", "tabs",
+    "title", "top", "type", "width"
   ];
   for (let prop of windowProps) {
     if (windowInfo[prop] !== undefined)
@@ -34,6 +25,10 @@ WindowManager.WindowType = WindowManager.browserWindows.WindowType;
 WindowManager.WindowState = WindowManager.browserWindows.WindowState;
 
 WindowManager.CreateType = WindowManager.browserWindows.CreateType;
+
+WindowManager.WINDOW_ID_NONE = WindowManager.browserWindows.WINDOW_ID_NONE;
+
+WindowManager.WINDOW_ID_CURRENT = WindowManager.browserWindows.WINDOW_ID_CURRENT;
 
 WindowManager.getWindowMethod = function(name) {
   var windowMethod = WindowManager.browserWindows[name];
