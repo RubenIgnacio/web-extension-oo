@@ -49,6 +49,7 @@ Notification.defaultType = Notification.TemplateType.BASIC;
 
 Notification.getNotificationMethod = function(name) {
   var notificationMethod = Notification.browserNotifications[name];
+
   if (!notificationMethod)
     throw new Error("Your browser does not support 'Notifications." + name + "()'.");
   else if (typeof(notificationMethod) !== "function")
@@ -60,12 +61,12 @@ Notification.getNotificationMethod = function(name) {
     else {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
-        args.push(function() {
+        args.push(function(value) {
           var runtimeError = chrome.runtime.lastError;
           if (runtimeError)
             reject(runtimeError);
           else
-            resolve.apply(null, arguments);
+            resolve(value);
         });
         notificationMethod.apply(null, args);
       });

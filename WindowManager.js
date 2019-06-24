@@ -37,22 +37,24 @@ WindowManager.CreateType = WindowManager.browserWindows.CreateType;
 
 WindowManager.getWindowMethod = function(name) {
   var windowMethod = WindowManager.browserWindows[name];
+
   if (!windowMethod)
     throw new Error("Your browser does not support 'Windows." + name + "()'.");
   else if (typeof(windowMethod) !== "function")
     throw new Error("'Windows." + name + "' is not a function");
+
   return function() {
     if (window.browser)
       return windowMethod.apply(null, arguments);
     else {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
-        args.push(function() {
+        args.push(function(value) {
           var runtimeError = chrome.runtime.lastError;
           if (runtimeError)
             reject(runtimeError);
           else
-            resolve.apply(null, arguments);
+            resolve(value);
         });
         windowMethod.apply(null, args);
       });

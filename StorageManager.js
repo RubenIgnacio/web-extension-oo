@@ -42,6 +42,7 @@ StorageManager.prototype.getStorage = function(storageArea = this.defaultStorage
 StorageManager.prototype.getStorageMethod = function(name, storageArea = this.defaultStorageArea) {
   var storage = this.getStorage(storageArea);
   var storageMethod = storage[name].bind(storage);
+
   if (!storageMethod)
     throw new Error("Your browser does not support 'Storage." + storageArea + "." + name + "()'.");
   else if (typeof(storageMethod) !== "function")
@@ -53,12 +54,12 @@ StorageManager.prototype.getStorageMethod = function(name, storageArea = this.de
     else {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
-        args.push(function() {
+        args.push(function(value) {
           var runtimeError = chrome.runtime.lastError;
           if (runtimeError)
             reject(runtimeError);
           else
-            resolve.apply(null, arguments);
+            resolve(value);
         });
         storageMethod.apply(null, args);
       });
