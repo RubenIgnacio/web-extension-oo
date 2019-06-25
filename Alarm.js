@@ -28,10 +28,10 @@ Alarm.getAlarmMethod = function(name, useCallback = true) {
   else if (typeof(alarmMethod) !== "function")
     throw new Error("'Alarms." + name + "' is not a function");
   
-  return function() {
-    if (window.browser || !useCallback)
-      return alarmMethod.apply(null, arguments);
-    else {
+  if (window.browser || !useCallback)
+    return alarmMethod;
+  else {
+    return function() {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
         args.push(function(value) {
@@ -43,8 +43,8 @@ Alarm.getAlarmMethod = function(name, useCallback = true) {
         });
         alarmMethod.apply(null, args);
       });
-    }
-  };
+    };
+  }
 };
 
 Alarm.create = Alarm.getAlarmMethod("create", false);

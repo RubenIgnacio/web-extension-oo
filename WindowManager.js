@@ -43,10 +43,10 @@ WindowManager.getWindowMethod = function(name) {
   else if (typeof(windowMethod) !== "function")
     throw new Error("'Windows." + name + "' is not a function");
 
-  return function() {
-    if (window.browser)
-      return windowMethod.apply(null, arguments);
-    else {
+  if (window.browser)
+    return windowMethod;
+  else {
+    return function() {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
         args.push(function(value) {
@@ -58,8 +58,8 @@ WindowManager.getWindowMethod = function(name) {
         });
         windowMethod.apply(null, args);
       });
-    }
-  };
+    };
+  }
 };
 
 WindowManager.open = function(createData) {

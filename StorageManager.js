@@ -48,10 +48,10 @@ StorageManager.prototype.getStorageMethod = function(name, storageArea = this.de
   else if (typeof(storageMethod) !== "function")
     throw new Error("'Storage." + name + "' is not a function");
 
-  return function() {
-    if (window.browser)
-      return storageMethod.apply(null, arguments);
-    else {
+  if (window.browser)
+    return storageMethod;
+  else {
+    return function() {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
         args.push(function(value) {
@@ -63,8 +63,8 @@ StorageManager.prototype.getStorageMethod = function(name, storageArea = this.de
         });
         storageMethod.apply(null, args);
       });
-    }
-  };
+    };
+  }
 };
 
 for (let methodName of ["get", "getBytesInUse", "set", "remove"]) {

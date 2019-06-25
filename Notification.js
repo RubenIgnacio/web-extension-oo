@@ -55,10 +55,10 @@ Notification.getNotificationMethod = function(name) {
   else if (typeof(notificationMethod) !== "function")
     throw new Error("'Notifications." + name + "' is not a function");
 
-  return function() {
-    if (window.browser)
-      return notificationMethod.apply(null, arguments);
-    else {
+  if (window.browser)
+    return notificationMethod;
+  else {
+    return function() {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
         args.push(function(value) {
@@ -70,8 +70,8 @@ Notification.getNotificationMethod = function(name) {
         });
         notificationMethod.apply(null, args);
       });
-    }
-  };
+    };
+  }
 };
 
 Notification.getOptionsOf = function(type) {
