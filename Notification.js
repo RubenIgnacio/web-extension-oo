@@ -9,33 +9,38 @@ function Notification(notificationId, options) {
   if (!notificationId && (!options || !options.title))
     throw new Error("You have not specified an 'id' or 'title' for the notification, you must specify at least one of them.");
 
-  function definePropertyWithDefaultValue(propName, defaultPropName) {
-    var __propName__ = "__" + propName + "__";
+  function definePropertyWithDefaultValue(obj, prop, defaultProp) {
+    var __prop__ = "__" + prop + "__";
 
-    Object.defineProperty(this, __propName__, {writable: true});
-
-    this.accessorProperty(propName, {
+    Object.defineProperty(obj, __prop__, {writable: true});
+    Object.defineProperty(obj, prop, {
+      enumerable: true,
+      configurable: true,
       get: function() {
-        return this[__propName__] || defaultPropName;
+        if (this[__prop__] == undefined)
+          return this[defaultProp];
+        return this[__prop__];
       },
       set: function(newVal) {
-        this[__propName__] = newVal;
+        this[__prop__] = newVal;
       }
     });
   }
 
-  definePropertyWithDefaultValue.call(this, "type", Notification.defaultType);
-  definePropertyWithDefaultValue.call(this, "defaultIconUrl", Notification.defaultIconUrl);
-  if (typeof(options) === "object") {
-    for (let opt in options) {
-      if (opt === "id" || opt === "iconUrl")
-        this["__" + opt + "__"] = options[opt];
-      else
-        this[opt] = options[opt];
-    }
+  definePropertyWithDefaultValue(this, "type", "defaultType");
+  definePropertyWithDefaultValue(this, "id", "title");
+  definePropertyWithDefaultValue(this, "iconUrl", "defaultIconUrl");
+
+  if (options && typeof(options) === "object") {
+    for (let opt in options)
+      this[opt] = options[opt];
   }
-  definePropertyWithDefaultValue.call(this, "id", this.title);
-  definePropertyWithDefaultValue.call(this, "iconUrl", this.defaultIconUrl);
+  if (this.defaultType == undefined)
+    this.defaultType = Notification.defaultType;
+
+  if (this.defaultIconUrl == undefined)
+    this.defaultIconUrl = Notification.defaultIconUrl;
+
   this.id = notificationId;
 }
 
@@ -97,10 +102,11 @@ Notification.getOptionsOf = function(type) {
   return listOptions;
 };
 
-for (let methodName of ["getAll", "getPermissionLevel"]) {
-  if (Notification.browserNotifications[methodName])
-    Notification[methodName] = Notification.getNotificationMethod(methodName);
-}
+["getAll", "getPermissionLevel"].forEach(function(methodName) {
+  Notification[methodName] = function() {
+    return Notification.getNotificationMethod(methodName)();
+  };
+});
 
 Notification.addEventListener = function(type, listener) {
   type = "on" + type[0].toUpperCase() + type.substring(1);
@@ -108,18 +114,6 @@ Notification.addEventListener = function(type, listener) {
   if (!event)
     throw new Error("Your browser does not support '" + type + "' event.");
   event.addListener(listener);
-};
-
-Notification.prototype.accessorProperty = function(propName, descriptor) {
-  if (!descriptor) descriptor = {writable: true};
-
-  if (descriptor.enumerable == undefined)
-    descriptor.enumerable = true;
-
-  if (descriptor.configurable == undefined)
-    descriptor.configurable = true;
-
-  Object.defineProperty(this, propName, descriptor);
 };
 
 Notification.prototype.getNotificationMethod = function(name) {
