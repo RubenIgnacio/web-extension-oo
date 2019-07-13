@@ -21,10 +21,10 @@ Command.getCommandMethod = function(name) {
   else if (typeof(commandMethod) !== "function")
     throw new Error("'Commands." + name + "' is not a function");
   
-  return function() {
-    if (window.browser)
-      return commandMethod.apply(null, arguments);
-    else {
+  if (window.browser)
+    return commandMethod;
+  else {
+    return function() {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
         args.push(function() {
@@ -36,8 +36,8 @@ Command.getCommandMethod = function(name) {
         });
         commandMethod.apply(null, args);
       });
-    }
-  };
+    };
+  }
 };
 
 Command.getAll = function() {
