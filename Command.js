@@ -69,7 +69,17 @@ Command.addEventListener = function(type, listener) {
 };
 
 Command.prototype.reset = function() {
-  return Command.reset(this.name);
+  var thisCommand = this;
+  var commandName = this.name;
+  return Command.reset(commandName).then(function() {
+    Command.getCommandMethod("getAll")().then(function(commands) {
+      var commandProps = ['description', 'shortcut'];
+      var resetCommand = commands.find((command) => command.name == commandName);
+      for (let commandProp of commandProps) {
+        thisCommand[commandProp] = resetCommand[commandProp];
+      }
+    });
+  });
 };
 
 Command.prototype.update = function(details) {
