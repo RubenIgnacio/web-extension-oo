@@ -42,6 +42,7 @@ function Notification(notificationId, options) {
     this.defaultIconUrl = Notification.defaultIconUrl;
 
   this.id = notificationId;
+  Object.defineProperty(this, "clearedId", {writable: true});
 }
 
 Notification.browserNotifications = (window.browser || window.chrome).notifications;
@@ -144,25 +145,18 @@ Notification.prototype.display = function(options, action = "create") {
     if (this[opt] != undefined)
       notificationOptions[opt] = this[opt];
   }
-  // verifica si hay una notificación anterior que aun no haya sido limpiada
-  if (this.clearedId) window.clearTimeout(this.clearedId);
-  return new Promise(function(resolve, reject) {
-    thisNotifi.getNotificationMethod(action)(thisNotifi.id, notificationOptions)
-      .then(function(notifiIdOrWasUpdated) {
-
-      resolve(notifiIdOrWasUpdated);
-      // limpia la notificación despues de 4 segundos
-      thisNotifi.clearedId = window.setTimeout(function() {
-        thisNotifi.clear();
-      }, 4E3);
-    }, reject);
+  return this.getNotificationMethod(action)(this.id, notificationOptions)
+    .then(function(notifiIdOrWasUpdated) {
+    if (thisNotifi.clearedId) window.clearTimeout(thisNotifi.clearedId);
+    // limpia la notificación despues de 4 segundos
+    thisNotifi.clearedId = window.setTimeout(function() {
+      if (thisNotifi.clearedId) thisNotifi.clearedId = null;
+      thisNotifi.clear();
+    }, 4E3);
+    return notifiIdOrWasUpdated;
   });
 };
 
 Notification.prototype.clear = function() {
-  var thisNotifi = this;
-  this.getNotificationMethod("clear")(this.id).then(function(wasCleared) {
-    thisNotifi.clearedId = null;
-    return wasCleared;
-  });
+  return this.getNotificationMethod("clear")(this.id);
 };
