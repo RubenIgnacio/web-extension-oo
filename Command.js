@@ -27,12 +27,12 @@ Command.getCommandMethod = function(name) {
     return function() {
       var args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
-        args.push(function() {
+        args.push(function(value) {
           var runtimeError = chrome.runtime.lastError;
           if (runtimeError)
             reject(runtimeError);
           else
-            resolve.apply(null, arguments);
+            resolve(value);
         });
         commandMethod.apply(null, args);
       });
