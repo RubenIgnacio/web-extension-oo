@@ -19,7 +19,7 @@ Command.getCommandMethod = function(name) {
   if (!commandMethod)
     throw new Error("Your browser does not support 'Commands." + name + "()'.");
   else if (typeof(commandMethod) !== "function")
-    throw new Error("'Commands." + name + "' is not a function");
+    throw new TypeError("'Commands." + name + "' is not a function");
   
   if (window.browser)
     return commandMethod;

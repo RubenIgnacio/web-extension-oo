@@ -31,7 +31,7 @@ StorageManager.prototype.setDefaultStorageArea = function(newDefaultStorageArea 
 StorageManager.prototype.getStorage = function(storageArea = this.defaultStorageArea) {
   var storageAreas = Object.values(StorageManager.StorageArea);
   if (!storageAreas.includes(storageArea))
-    throw new Error("Storage area '" + storageArea + "' is invalid.");
+    throw new TypeError("Storage area '" + storageArea + "' is invalid.");
 
   var storage = this.browserStorage[storageArea];
   if (!storage)
@@ -46,7 +46,7 @@ StorageManager.prototype.getStorageMethod = function(name, storageArea = this.de
   if (!storageMethod)
     throw new Error("Your browser does not support 'Storage." + storageArea + "." + name + "()'.");
   else if (typeof(storageMethod) !== "function")
-    throw new Error("'Storage." + name + "' is not a function");
+    throw new TypeError("'Storage." + name + "' is not a function");
 
   if (window.browser)
     return storageMethod;

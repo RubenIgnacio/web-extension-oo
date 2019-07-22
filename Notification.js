@@ -59,7 +59,7 @@ Notification.getNotificationMethod = function(name) {
   if (!notificationMethod)
     throw new Error("Your browser does not support 'Notifications." + name + "()'.");
   else if (typeof(notificationMethod) !== "function")
-    throw new Error("'Notifications." + name + "' is not a function");
+    throw new TypeError("'Notifications." + name + "' is not a function");
 
   if (window.browser)
     return notificationMethod;
@@ -130,7 +130,7 @@ Notification.prototype.getNotificationMethod = function(name) {
 
 Notification.prototype.display = function(options, action = "create") {
   if (action !== "create" && action !== "update")
-    throw new Error("The expected values were 'create' or 'update'.");
+    throw new TypeError("The expected values were 'create' or 'update'.");
 
   var listOpts = Notification.getOptionsOf(this.type);
   var notificationOptions = {type: this.type};

@@ -26,7 +26,7 @@ Alarm.getAlarmMethod = function(name, useCallback = true) {
   if (!alarmMethod)
     throw new Error("Your browser does not support 'Alarms." + name + "()'.");
   else if (typeof(alarmMethod) !== "function")
-    throw new Error("'Alarms." + name + "' is not a function");
+    throw new TypeError("'Alarms." + name + "' is not a function");
   
   if (window.browser || !useCallback)
     return alarmMethod;
