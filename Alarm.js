@@ -7,15 +7,8 @@ function Alarm(alarmInfo) {
   if (!this.browserAlarm)
     throw new Error("Your browser does not support alarms.");
 
-  var alarmProps = [
-    "name",
-    "scheduledTime",
-    "periodInMinutes"
-  ];
-  alarmProps.forEach(function(prop) {
-    if (alarmInfo[prop] !== undefined)
-      this[prop] = alarmInfo[prop];
-  }, this);
+  for (let prop in alarmInfo)
+    this[prop] = alarmInfo[prop];
 }
 
 Alarm.browserAlarm = (window.browser || window.chrome).alarms;
