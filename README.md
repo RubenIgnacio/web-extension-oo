@@ -1,10 +1,10 @@
-
 # WebExtensionLibs
 
 * [Alarm](#alarm)
 * [Command](#command)
 * [Notification](#notification)
 * [StorageManager](#storagemanager)
+* [Tab](#tab)
 * [WindowManager](#windowmanager)
 * [License](#license)
 
@@ -112,13 +112,36 @@ storage.setDefaultStorageArea('sync');
 var storageSync = new StorageManager('sync');
 ```
 
+## Tab
+
+```javascript
+var tabId;
+// Abre un nuevo tab en la ventana actual.
+Tab.open({url: 'http://example.com/'}).then((tabInfo) => tabId = tabInfo.id);
+// Cierra el tab después de 3 segundos.
+setTimeout(() => {
+  // También puede usar Tab.close([tabId1, tabId2, ..., tabIdN]) para cerrar uno o mas tabs.
+  Tab.get(tabId).then((tabInfo) => tabInfo.close());
+}, 3000);
+```
+
+También puede abrir un tab en una ventana especifica:
+
+```javascript
+// Pasando windowId en la llamada a open.
+Tab.open({
+  url: 'http://example.com/',
+  windowId: id_de_la_ventana
+});
+```
+
 ## WindowManager
 
 ```javascript
 var winId;
 // Abre una ventana nueva.
 WindowManager.open({
-  url: 'https://www.google.com/',
+  url: 'http://example.com/',
   type: 'normal',
   state: 'maximized'
 }).then((winInf) => winId = winInf.id);
