@@ -28,7 +28,9 @@ StorageManager.prototype.setDefaultStorageArea = function(newDefaultStorageArea 
   this.defaultStorageArea = newDefaultStorageArea;
 };
 
-StorageManager.prototype.getStorage = function(storageArea = this.defaultStorageArea) {
+StorageManager.prototype.getStorage = function(storageArea) {
+  if (storageArea == null) storageArea = this.defaultStorageArea;
+
   var storageAreas = Object.values(StorageManager.StorageArea);
   if (!storageAreas.includes(storageArea))
     throw new TypeError("Storage area '" + storageArea + "' is invalid.");
@@ -39,7 +41,7 @@ StorageManager.prototype.getStorage = function(storageArea = this.defaultStorage
   return storage;
 };
 
-StorageManager.prototype.getStorageMethod = function(name, storageArea = this.defaultStorageArea) {
+StorageManager.prototype.getStorageMethod = function(name, storageArea) {
   var storage = this.getStorage(storageArea);
   var storageMethod = storage[name].bind(storage);
 
