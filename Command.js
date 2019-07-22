@@ -6,9 +6,8 @@ function Command(options) {
   if (!this.browserCommand)
     throw new Error("Your browser does not support commands.");
 
-  this.name = options.name;
-  this.description = options.description;
-  this.shortcut = options.shortcut;
+  for (let prop in options)
+    this[prop] = options[prop];
 }
 
 Command.browserCommand = (window.browser || window.chrome).commands;
