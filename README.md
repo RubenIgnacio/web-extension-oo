@@ -133,6 +133,8 @@ Tab.open({
   url: 'http://example.com/',
   windowId: id_de_la_ventana
 });
+// O desde una instancia de WindowManager.
+windowInfo.openTab({url: 'http://example.com/'});
 ```
 
 ## WindowManager

@@ -97,3 +97,23 @@ WindowManager.prototype.update = function(updateInfo) {
 WindowManager.prototype.close = function() {
   return this.getWindowMethod("remove")(this.id);
 };
+
+WindowManager.prototype.openTab = function(createProperties = {}) {
+  createProperties.windowId = this.id;
+
+  if (window.Tab)
+    return Tab.open(createProperties);
+  else if (window.browser)
+    return browser.tabs.create(createProperties);
+  else {
+    return new Promise(function(resolve, reject) {
+      chrome.tabs.create(createProperties, function(tabInfo) {
+        var runtimeError = chrome.runtime.lastError;
+        if (runtimeError)
+          reject(runtimeError);
+        else
+          resolve(tabInfo);
+      });
+    });
+  }
+};
