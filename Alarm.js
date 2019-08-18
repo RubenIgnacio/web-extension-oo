@@ -7,8 +7,7 @@ function Alarm(alarmInfo) {
   if (!this.browserAlarm)
     throw new Error("Your browser does not support alarms.");
 
-  for (let prop in alarmInfo)
-    this[prop] = alarmInfo[prop];
+  Object.assign(this, alarmInfo);
 }
 
 Alarm.browserAlarm = (window.browser || window.chrome).alarms;

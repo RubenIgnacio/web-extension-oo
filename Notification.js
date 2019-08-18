@@ -31,10 +31,9 @@ function Notification(notificationId, options) {
   definePropertyWithDefaultValue(this, "id", "title");
   definePropertyWithDefaultValue(this, "iconUrl", "defaultIconUrl");
 
-  if (options && typeof(options) === "object") {
-    for (let opt in options)
-      this[opt] = options[opt];
-  }
+  if (options && typeof(options) === "object")
+    Object.assign(this, options);
+
   if (this.defaultType == undefined)
     this.defaultType = Notification.defaultType;
 
@@ -147,14 +146,14 @@ Notification.prototype.display = function(options, action = "create") {
   }
   return this.getNotificationMethod(action)(this.id, notificationOptions)
     .then(function(notifiIdOrWasUpdated) {
-    if (thisNotifi.clearedId) window.clearTimeout(thisNotifi.clearedId);
-    // limpia la notificación despues de 4 segundos
-    thisNotifi.clearedId = window.setTimeout(function() {
-      if (thisNotifi.clearedId) thisNotifi.clearedId = null;
-      thisNotifi.clear();
-    }, 4E3);
-    return notifiIdOrWasUpdated;
-  });
+      if (thisNotifi.clearedId) window.clearTimeout(thisNotifi.clearedId);
+      // limpia la notificación despues de 4 segundos
+      thisNotifi.clearedId = window.setTimeout(function() {
+        if (thisNotifi.clearedId) thisNotifi.clearedId = null;
+        thisNotifi.clear();
+      }, 4E3);
+      return notifiIdOrWasUpdated;
+    });
 };
 
 Notification.prototype.clear = function() {

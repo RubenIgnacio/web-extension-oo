@@ -6,8 +6,7 @@ function Command(options) {
   if (!this.browserCommand)
     throw new Error("Your browser does not support commands.");
 
-  for (let prop in options)
-    this[prop] = options[prop];
+  Object.assign(this, options);
 }
 
 Command.browserCommand = (window.browser || window.chrome).commands;
@@ -72,11 +71,8 @@ Command.prototype.reset = function() {
   var commandName = this.name;
   return Command.reset(commandName).then(function() {
     Command.getCommandMethod("getAll")().then(function(commands) {
-      var commandProps = ['description', 'shortcut'];
-      var resetCommand = commands.find((command) => command.name == commandName);
-      for (let commandProp of commandProps) {
-        thisCommand[commandProp] = resetCommand[commandProp];
-      }
+      var resetCommand = commands.find((command) => command.name === commandName);
+      Object.assign(thisCommand, resetCommand);
     });
   });
 };
@@ -84,10 +80,5 @@ Command.prototype.reset = function() {
 Command.prototype.update = function(details) {
   details.name = this.name;
   var thisCommand = this;
-  return Command.update(details).then(function() {
-    var commandProps = ['description', 'shortcut'];
-    for (let commandProp of commandProps) {
-      thisCommand[commandProp] = details[commandProp];
-    }
-  });
+  return Command.update(details).then(() => { Object.assign(thisCommand, details) });
 };

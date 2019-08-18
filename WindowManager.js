@@ -6,12 +6,10 @@ function WindowManager(windowInfo) {
   if (!this.browserWindows)
     throw new Error("Your browser does not support windows.");
 
-  for (let prop in windowInfo) {
-    let value = windowInfo[prop];
-    if (prop === "tabs" && window.Tab)
-      value = value.map((tab) => new Tab(tab));
-    this[prop] = value;
-  }
+  if (windowInfo.tabs && window.Tab)
+    windowInfo.tabs = windowInfo.tabs.map((tab) => new Tab(tab));
+
+  Object.assign(this, windowInfo);
 }
 
 WindowManager.browserWindows = (window.browser || window.chrome).windows;

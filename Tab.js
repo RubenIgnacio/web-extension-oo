@@ -6,11 +6,10 @@ function Tab(tabInfo) {
   if (!this.browserTabs)
     throw new Error("Your browser does not support tabs.");
 
-  for (let key in tabInfo) {
-    let value = tabInfo[key];
-    if (key === "url") value = new URL(value);
-    this[key] = value;
-  }
+  if (tabInfo.url)
+    tabInfo.url = new URL(tabInfo.url);
+
+  Object.assign(this, tabInfo);
 }
 
 Tab.browserTabs = (window.browser || window.chrome).tabs;
@@ -96,11 +95,7 @@ Tab.prototype.close = function() {
 
 Tab.prototype.update = function(updateProperties) {
   var thisTab = this;
-  return this.getTabMethod("update")(this.id, updateProperties).then(function(tabInfo) {
-    for (let key in updateProperties)
-      thisTab[key] = updateProperties[key];
-    return thisTab;
-  });
+  return this.getTabMethod("update")(this.id, updateProperties).then((tabInfo) => Object.assign(thisTab, tabInfo));
 };
 
 Tab.prototype.getWindow = function(getInfo) {
