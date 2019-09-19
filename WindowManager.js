@@ -82,13 +82,12 @@ WindowManager.addEventListener = function(type, listener) {
 WindowManager.prototype.getWindowMethod = WindowManager.getWindowMethod;
 
 WindowManager.prototype.update = function(updateInfo) {
-  var thisWindow = this;
-  return this.getWindowMethod("update")(this.id, updateInfo).then(function(windowInfo) {
+  return this.getWindowMethod("update")(this.id, updateInfo).then(() => {
     for (let key in updateInfo) {
       if (key !== "drawAttention" && key !== "titlePreface")
-        thisWindow[key] = updateInfo[key];
+        this[key] = updateInfo[key];
     }
-    return thisWindow;
+    return this;
   });
 };
 

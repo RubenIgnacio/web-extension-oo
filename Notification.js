@@ -9,11 +9,11 @@ function Notification(notificationId, options) {
   if (!notificationId && (!options || !options.title))
     throw new Error("You have not specified an 'id' or 'title' for the notification, you must specify at least one of them.");
 
-  function definePropertyWithDefaultValue(obj, prop, defaultProp) {
-    var __prop__ = "__" + prop + "__";
+  var definePropertyWithDefaultValue = (prop, defaultProp) => {
+    let __prop__ = "__" + prop + "__";
 
-    Object.defineProperty(obj, __prop__, {writable: true});
-    Object.defineProperty(obj, prop, {
+    Object.defineProperty(this, __prop__, {writable: true});
+    Object.defineProperty(this, prop, {
       enumerable: true,
       configurable: true,
       get: function() {
@@ -25,11 +25,11 @@ function Notification(notificationId, options) {
         this[__prop__] = newVal;
       }
     });
-  }
+  };
 
-  definePropertyWithDefaultValue(this, "type", "defaultType");
-  definePropertyWithDefaultValue(this, "id", "title");
-  definePropertyWithDefaultValue(this, "iconUrl", "defaultIconUrl");
+  definePropertyWithDefaultValue("type", "defaultType");
+  definePropertyWithDefaultValue("id", "title");
+  definePropertyWithDefaultValue("iconUrl", "defaultIconUrl");
 
   if (options && typeof(options) === "object")
     Object.assign(this, options);
@@ -133,7 +133,6 @@ Notification.prototype.display = function(options, action = "create") {
 
   var listOpts = Notification.getOptionsOf(this.type);
   var notificationOptions = {type: this.type};
-  var thisNotifi = this;
 
   for (let opt of listOpts) {
     // cambia o agrega las propiedades que esten en 'listOpts'
@@ -145,12 +144,12 @@ Notification.prototype.display = function(options, action = "create") {
       notificationOptions[opt] = this[opt];
   }
   return this.getNotificationMethod(action)(this.id, notificationOptions)
-    .then(function(notifiIdOrWasUpdated) {
-      if (thisNotifi.clearedId) window.clearTimeout(thisNotifi.clearedId);
+    .then((notifiIdOrWasUpdated) => {
+      if (this.clearedId) window.clearTimeout(this.clearedId);
       // limpia la notificación despues de 4 segundos
-      thisNotifi.clearedId = window.setTimeout(function() {
-        if (thisNotifi.clearedId) thisNotifi.clearedId = null;
-        thisNotifi.clear();
+      this.clearedId = window.setTimeout(() => {
+        if (this.clearedId) this.clearedId = null;
+        this.clear();
       }, 4E3);
       return notifiIdOrWasUpdated;
     });

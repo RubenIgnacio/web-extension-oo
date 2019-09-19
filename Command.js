@@ -67,18 +67,15 @@ Command.addEventListener = function(type, listener) {
 };
 
 Command.prototype.reset = function() {
-  var thisCommand = this;
-  var commandName = this.name;
-  return Command.reset(commandName).then(function() {
-    Command.getCommandMethod("getAll")().then(function(commands) {
-      var resetCommand = commands.find((command) => command.name === commandName);
-      Object.assign(thisCommand, resetCommand);
+  return Command.reset(this.name).then(() => {
+    Command.getCommandMethod("getAll")().then((commands) => {
+      let resetCommand = commands.find((command) => command.name === this.name);
+      Object.assign(this, resetCommand);
     });
   });
 };
 
 Command.prototype.update = function(details) {
   details.name = this.name;
-  var thisCommand = this;
-  return Command.update(details).then(() => { Object.assign(thisCommand, details) });
+  return Command.update(details).then(() => { Object.assign(this, details) });
 };

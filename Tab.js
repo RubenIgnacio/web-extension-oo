@@ -94,8 +94,7 @@ Tab.prototype.close = function() {
 };
 
 Tab.prototype.update = function(updateProperties) {
-  var thisTab = this;
-  return this.getTabMethod("update")(this.id, updateProperties).then((tabInfo) => Object.assign(thisTab, tabInfo));
+  return this.getTabMethod("update")(this.id, updateProperties).then((tabInfo) => Object.assign(this, tabInfo));
 };
 
 Tab.prototype.getWindow = function(getInfo) {

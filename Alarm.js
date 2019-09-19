@@ -42,7 +42,7 @@ Alarm.getAlarmMethod = function(name, useCallback = true) {
 Alarm.create = Alarm.getAlarmMethod("create", false);
 
 Alarm.getAll = function() {
-  return Alarm.getAlarmMethod("getAll")().then(function(alarmsArray) {
+  return Alarm.getAlarmMethod("getAll")().then((alarmsArray) => {
     return alarmsArray.map((alarm) => new Alarm(alarm));
   });
 };
