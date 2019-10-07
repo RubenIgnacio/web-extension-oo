@@ -39,7 +39,9 @@ Alarm.getAlarmMethod = function(name, useCallback = true) {
   }
 };
 
-Alarm.create = Alarm.getAlarmMethod("create", false);
+Alarm.create = function(name, alarmInfo) {
+  return Alarm.getAlarmMethod("create", false)(name, alarmInfo);
+};
 
 Alarm.getAll = function() {
   return Alarm.getAlarmMethod("getAll")().then((alarmsArray) => {
@@ -53,7 +55,9 @@ Alarm.get = function(name) {
   });
 };
 
-Alarm.clearAll = Alarm.getAlarmMethod("clearAll");
+Alarm.clearAll = function() {
+  return Alarm.getAlarmMethod("clearAll")();
+};
 
 Alarm.addEventListener = function(type, listener) {
   type = "on" + type[0].toUpperCase() + type.substring(1);
