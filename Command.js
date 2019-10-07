@@ -66,13 +66,14 @@ Command.addEventListener = function(type, listener) {
   event.addListener(listener);
 };
 
+Command.prototype.reload = function() {
+  Command.getCommandMethod("getAll")().then((commands) => {
+    return commands.find((command) => command.name === this.name);
+  }).then((command) => Object.assign(this, command));
+};
+
 Command.prototype.reset = function() {
-  return Command.reset(this.name).then(() => {
-    Command.getCommandMethod("getAll")().then((commands) => {
-      let resetCommand = commands.find((command) => command.name === this.name);
-      Object.assign(this, resetCommand);
-    });
-  });
+  return Command.reset(this.name).then(() => this.reload());
 };
 
 Command.prototype.update = function(details) {
