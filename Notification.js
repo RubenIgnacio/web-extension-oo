@@ -2,9 +2,7 @@ function Notification(notificationId, options) {
   if (!(this instanceof Notification))
     return new Notification(notificationId, options);
 
-  this.browserNotifications = Notification.browserNotifications;
-  if (!this.browserNotifications)
-    throw new Error("Your browser does not support notifications.");
+  this.browserNotifications = WebExtension.getAPI('notifications');
 
   if (!notificationId && (!options || !options.title))
     throw new Error("You have not specified an 'id' or 'title' for the notification, you must specify at least one of them.");
@@ -44,7 +42,7 @@ function Notification(notificationId, options) {
   Object.defineProperty(this, "clearedId", {writable: true});
 }
 
-Notification.browserNotifications = (window.browser || window.chrome).notifications;
+Notification.browserNotifications = WebExtension.getAPI('notifications', true);
 
 Notification.TemplateType = Notification.browserNotifications.TemplateType;
 
@@ -60,23 +58,9 @@ Notification.getNotificationMethod = function(name) {
   else if (typeof(notificationMethod) !== "function")
     throw new TypeError("'Notifications." + name + "' is not a function");
 
-  if (window.browser)
+  if (self.browser)
     return notificationMethod;
-  else {
-    return function() {
-      var args = Array.from(arguments);
-      return new Promise(function(resolve, reject) {
-        args.push(function(value) {
-          var runtimeError = chrome.runtime.lastError;
-          if (runtimeError)
-            reject(runtimeError);
-          else
-            resolve(value);
-        });
-        notificationMethod.apply(null, args);
-      });
-    };
-  }
+  return WebExtension.apiMethodAsPromise(notificationMethod);
 };
 
 Notification.getOptionsOf = function(type) {
@@ -109,10 +93,7 @@ Notification.getOptionsOf = function(type) {
 });
 
 Notification.addEventListener = function(type, listener) {
-  type = "on" + type[0].toUpperCase() + type.substring(1);
-  var event = Notification.browserNotifications[type];
-  if (!event)
-    throw new Error("Your browser does not support '" + type + "' event.");
+  let event = WebExtension.getAPIEvent(Notification.browserNotifications, type);
   event.addListener(listener);
 };
 
@@ -145,9 +126,9 @@ Notification.prototype.display = function(options, action = "create") {
   }
   return this.getNotificationMethod(action)(this.id, notificationOptions)
     .then((notifiIdOrWasUpdated) => {
-      if (this.clearedId) window.clearTimeout(this.clearedId);
+      if (this.clearedId) clearTimeout(this.clearedId);
       // limpia la notificación despues de 4 segundos
-      this.clearedId = window.setTimeout(() => {
+      this.clearedId = setTimeout(() => {
         if (this.clearedId) this.clearedId = null;
         this.clear();
       }, 4E3);

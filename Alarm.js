@@ -2,41 +2,23 @@ function Alarm(alarmInfo) {
   if (!(this instanceof Alarm))
     return new Alarm(alarmInfo);
 
-  this.browserAlarm = Alarm.browserAlarm;
-
-  if (!this.browserAlarm)
-    throw new Error("Your browser does not support alarms.");
-
+  this.browserAlarm = WebExtension.getAPI('alarms');
   Object.assign(this, alarmInfo);
 }
 
-Alarm.browserAlarm = (window.browser || window.chrome).alarms;
+Alarm.browserAlarm = WebExtension.getAPI('alarms', true);
 
 Alarm.getAlarmMethod = function(name, useCallback = true) {
-  var alarmMethod = Alarm.browserAlarm[name];
+  let alarmMethod = Alarm.browserAlarm[name];
   
   if (!alarmMethod)
     throw new Error("Your browser does not support 'Alarms." + name + "()'.");
   else if (typeof(alarmMethod) !== "function")
     throw new TypeError("'Alarms." + name + "' is not a function");
   
-  if (window.browser || !useCallback)
+  if (self.browser || !useCallback)
     return alarmMethod;
-  else {
-    return function() {
-      var args = Array.from(arguments);
-      return new Promise(function(resolve, reject) {
-        args.push(function(value) {
-          var runtimeError = chrome.runtime.lastError;
-          if (runtimeError)
-            reject(runtimeError);
-          else
-            resolve(value);
-        });
-        alarmMethod.apply(null, args);
-      });
-    };
-  }
+  return WebExtension.getAPIMethodAsPromise(alarmMethod);
 };
 
 Alarm.create = function(name, alarmInfo) {
@@ -60,10 +42,7 @@ Alarm.clearAll = function() {
 };
 
 Alarm.addEventListener = function(type, listener) {
-  type = "on" + type[0].toUpperCase() + type.substring(1);
-  var event = Alarm.browserAlarm[type];
-  if (!event)
-    throw new Error("Your browser does not support '" + type + "' event.");;
+  let event = WebExtension.getAPIEvent(Alarm.browserAlarm, type);
   event.addListener(listener);
 };
 

@@ -2,22 +2,16 @@ function StorageManager(defaultStorageArea) {
   if (!(this instanceof StorageManager))
     return new StorageManager(defaultStorageArea);
 
-  this.browserStorage = StorageManager.browserStorage;
-  if (!this.browserStorage)
-    throw new Error("Your browser does not support storage.");
-
+  this.browserStorage = WebExtension.getAPI('storage');
   this.setDefaultStorageArea(defaultStorageArea);
 }
 
-StorageManager.browserStorage = (window.browser || window.chrome).storage;
+StorageManager.browserStorage = WebExtension.getAPI('storage', true);
 
 StorageManager.StorageArea = {LOCAL: "local", SYNC: "sync", MANAGED: "managed"};
 
 StorageManager.addEventListener = function(type, listener) {
-  type = "on" + type[0].toUpperCase() + type.substring(1);
-  var event = StorageManager.browserStorage[type];
-  if (!event)
-    throw new Error("Your browser does not support '" + type + "' event.");
+  let event = WebExtension.getAPIEvent(StorageManager.browserStorage, type);
   event.addListener(listener);
 };
 
@@ -50,30 +44,16 @@ StorageManager.prototype.getStorageMethod = function(name, storageArea) {
   else if (typeof(storageMethod) !== "function")
     throw new TypeError("'Storage." + name + "' is not a function");
 
-  if (window.browser)
+  if (self.browser)
     return storageMethod;
-  else {
-    return function() {
-      var args = Array.from(arguments);
-      return new Promise(function(resolve, reject) {
-        args.push(function(value) {
-          var runtimeError = chrome.runtime.lastError;
-          if (runtimeError)
-            reject(runtimeError);
-          else
-            resolve(value);
-        });
-        storageMethod.apply(null, args);
-      });
-    };
-  }
+  return WebExtension.apiMethodAsPromise(storageMethod);
 };
 
-for (let methodName of ["get", "getBytesInUse", "set", "remove"]) {
+["get", "getBytesInUse", "set", "remove"].forEach(function(methodName) {
   StorageManager.prototype[methodName] = function(keysItems, storageArea) {
     return this.getStorageMethod(methodName, storageArea)(keysItems);
   };
-}
+});
 
 StorageManager.prototype.clear = function(storageArea) {
   return this.getStorageMethod("clear", storageArea)();

@@ -2,40 +2,23 @@ function Command(options) {
   if (!(this instanceof Command))
     return new Command(options);
 
-  this.browserCommand = Command.browserCommand;
-  if (!this.browserCommand)
-    throw new Error("Your browser does not support commands.");
-
+  this.browserCommand = WebExtension.getAPI('commands');
   Object.assign(this, options);
 }
 
-Command.browserCommand = (window.browser || window.chrome).commands;
+Command.browserCommand = WebExtension.getAPI('commands', true);
 
 Command.getCommandMethod = function(name) {
-  var commandMethod = Command.browserCommand[name];
+  let commandMethod = Command.browserCommand[name];
   
   if (!commandMethod)
     throw new Error("Your browser does not support 'Commands." + name + "()'.");
   else if (typeof(commandMethod) !== "function")
     throw new TypeError("'Commands." + name + "' is not a function");
   
-  if (window.browser)
+  if (self.browser)
     return commandMethod;
-  else {
-    return function() {
-      var args = Array.from(arguments);
-      return new Promise(function(resolve, reject) {
-        args.push(function(value) {
-          var runtimeError = chrome.runtime.lastError;
-          if (runtimeError)
-            reject(runtimeError);
-          else
-            resolve(value);
-        });
-        commandMethod.apply(null, args);
-      });
-    };
-  }
+  return WebExtension.apiMethodAsPromise(commandMethod);
 };
 
 Command.getAll = function() {
@@ -59,10 +42,7 @@ Command.update = function(details) {
 };
 
 Command.addEventListener = function(type, listener) {
-  type = "on" + type[0].toUpperCase() + type.substring(1);
-  var event = Command.browserCommand[type];
-  if (!event)
-    throw new Error("Your browser does not support '" + type + "' event.");;
+  let event = WebExtension.getAPIEvent(Command.browserCommand, type);
   event.addListener(listener);
 };
 

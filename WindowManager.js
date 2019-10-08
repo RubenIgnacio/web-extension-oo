@@ -2,9 +2,7 @@ function WindowManager(windowInfo) {
   if (!(this instanceof WindowManager))
     return new WindowManager(windowInfo);
 
-  this.browserWindows = WindowManager.browserWindows;
-  if (!this.browserWindows)
-    throw new Error("Your browser does not support windows.");
+  this.browserWindows = WebExtension.getAPI('windows');
 
   if (windowInfo.tabs && window.Tab)
     windowInfo.tabs = windowInfo.tabs.map((tab) => new Tab(tab));
@@ -12,7 +10,7 @@ function WindowManager(windowInfo) {
   Object.assign(this, windowInfo);
 }
 
-WindowManager.browserWindows = (window.browser || window.chrome).windows;
+WindowManager.browserWindows = WebExtension.getAPI('windows', true);
 
 WindowManager.WindowType = WindowManager.browserWindows.WindowType;
 
@@ -32,23 +30,9 @@ WindowManager.getWindowMethod = function(name) {
   else if (typeof(windowMethod) !== "function")
     throw new TypeError("'Windows." + name + "' is not a function");
 
-  if (window.browser)
+  if (self.browser)
     return windowMethod;
-  else {
-    return function() {
-      var args = Array.from(arguments);
-      return new Promise(function(resolve, reject) {
-        args.push(function(value) {
-          var runtimeError = chrome.runtime.lastError;
-          if (runtimeError)
-            reject(runtimeError);
-          else
-            resolve(value);
-        });
-        windowMethod.apply(null, args);
-      });
-    };
-  }
+  return WebExtension.apiMethodAsPromise(windowMethod);
 };
 
 WindowManager.open = function(createData) {
@@ -72,10 +56,7 @@ WindowManager.get = function(windowId, getInfo) {
 });
 
 WindowManager.addEventListener = function(type, listener) {
-  type = "on" + type[0].toUpperCase() + type.substring(1);
-  var event = WindowManager.browserWindows[type];
-  if (!event)
-    throw new Error("Your browser does not support '" + type + "' event.");
+  let event = WebExtension.getAPIEvent(WindowManager.browserWindows, type);
   event.addListener(listener);
 };
 
@@ -100,17 +81,9 @@ WindowManager.prototype.openTab = function(createProperties = {}) {
 
   if (window.Tab)
     return Tab.open(createProperties);
-  else if (window.browser)
-    return browser.tabs.create(createProperties);
-  else {
-    return new Promise(function(resolve, reject) {
-      chrome.tabs.create(createProperties, function(tabInfo) {
-        var runtimeError = chrome.runtime.lastError;
-        if (runtimeError)
-          reject(runtimeError);
-        else
-          resolve(tabInfo);
-      });
-    });
-  }
+
+  let tabMethod = WebExtension.getAPI('tabs').create;
+  if (!self.browser)
+    tabMethod = WebExtension.apiMethodAsPromise(tabMethod);
+  return tabMethod(createProperties);
 };

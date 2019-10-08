@@ -2,9 +2,7 @@ function Tab(tabInfo) {
   if (!(this instanceof Tab))
     return new Tab(tabInfo);
 
-  this.browserTabs = Tab.browserTabs;
-  if (!this.browserTabs)
-    throw new Error("Your browser does not support tabs.");
+  this.browserTabs = WebExtension.getAPI('tabs');
 
   if (tabInfo.url)
     tabInfo.url = new URL(tabInfo.url);
@@ -12,7 +10,7 @@ function Tab(tabInfo) {
   Object.assign(this, tabInfo);
 }
 
-Tab.browserTabs = (window.browser || window.chrome).tabs;
+Tab.browserTabs = WebExtension.getAPI('tabs', true);
 
 Tab.MutedInfoReason = Tab.browserTabs.MutedInfoReason;
 
@@ -38,23 +36,9 @@ Tab.getTabMethod = function(name) {
   else if (typeof(tabMethod) !== "function")
     throw new TypeError("'Tabs." + name + "' is not a function");
 
-  if (window.browser)
+  if (self.browser)
     return tabMethod;
-  else {
-    return function() {
-      var args = Array.from(arguments);
-      return new Promise(function(resolve, reject) {
-        args.push(function(value) {
-          var runtimeError = chrome.runtime.lastError;
-          if (runtimeError)
-            reject(runtimeError);
-          else
-            resolve(value);
-        });
-        tabMethod.apply(null, args);
-      });
-    };
-  }
+  return WebExtension.apiMethodAsPromise(tabMethod);
 };
 
 Tab.open = function(createProperties) {
@@ -74,10 +58,7 @@ Tab.close = function(tabIds) {
 };
 
 Tab.addEventListener = function(type, listener) {
-  type = "on" + type[0].toUpperCase() + type.substring(1);
-  var event = Tab.browserTabs[type];
-  if (!event)
-    throw new Error("Your browser does not support '" + type + "' event.");
+  let event = WebExtension.getAPIEvent(Tab.browserTabs, type);
   event.addListener(listener);
 };
 
@@ -98,21 +79,13 @@ Tab.prototype.update = function(updateProperties) {
 };
 
 Tab.prototype.getWindow = function(getInfo) {
-  var windowId = this.windowId;
+  let windowId = this.windowId;
 
-  if (window.WindowManager)
+  if (self.WindowManager)
     return WindowManager.get(windowId, getInfo);
-  else if (window.browser)
-    return browser.windows.get(windowId, getInfo);
-  else {
-    return new Promise(function(resolve, reject) {
-      chrome.windows.get(windowId, getInfo, function(windowInfo) {
-        var runtimeError = chrome.runtime.lastError;
-        if (runtimeError)
-          reject(runtimeError);
-        else
-          resolve(windowInfo);
-      });
-    });
-  }
+
+  let windowMethod = WebExtension.getAPI('windows').get;
+  if (!self.browser)
+    windowMethod = WebExtension.apiMethodAsPromise(windowMethod);
+  return windowMethod(windowId, getInfo);
 };
