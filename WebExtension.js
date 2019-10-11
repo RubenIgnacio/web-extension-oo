@@ -12,9 +12,9 @@ var WebExtension = {
   apiMethodAsPromise: (apiMethod) => {
     return function() {
       let args = Array.from(arguments);
-      return new Promise(function(resolve, reject) {
+      return new Promise((resolve, reject) => {
         args.push(function(value) {
-          let runtimeError = chrome.runtime.lastError;
+          let runtimeError = WebExtension.getAPI('runtime').lastError;
           if (runtimeError)
             reject(runtimeError);
           else
