@@ -58,8 +58,6 @@ Notification.getNotificationMethod = function(name) {
   else if (typeof(notificationMethod) !== "function")
     throw new TypeError("'Notifications." + name + "' is not a function");
 
-  if (self.browser)
-    return notificationMethod;
   return WebExtension.apiMethodAsPromise(notificationMethod);
 };
 

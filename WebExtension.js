@@ -1,5 +1,9 @@
 var WebExtension = {
   browser: self.browser || self.chrome,
+  supportPromises: () => {
+    if (self.browser) return /Firefox/.test(navigator.userAgent);
+    return false;
+  },
   getAPI: (apiName, silent) => {
     let api = WebExtension.browser[apiName];
 
@@ -10,6 +14,8 @@ var WebExtension = {
     return api;
   },
   apiMethodAsPromise: (apiMethod) => {
+    if (WebExtension.supportPromises()) return apiMethod;
+
     return function() {
       let args = Array.from(arguments);
       return new Promise((resolve, reject) => {

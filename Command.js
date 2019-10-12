@@ -16,8 +16,6 @@ Command.getCommandMethod = function(name) {
   else if (typeof(commandMethod) !== "function")
     throw new TypeError("'Commands." + name + "' is not a function");
   
-  if (self.browser)
-    return commandMethod;
   return WebExtension.apiMethodAsPromise(commandMethod);
 };
 

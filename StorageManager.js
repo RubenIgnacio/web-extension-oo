@@ -44,8 +44,6 @@ StorageManager.prototype.getStorageMethod = function(name, storageArea) {
   else if (typeof(storageMethod) !== "function")
     throw new TypeError("'Storage." + name + "' is not a function");
 
-  if (self.browser)
-    return storageMethod;
   return WebExtension.apiMethodAsPromise(storageMethod);
 };
 

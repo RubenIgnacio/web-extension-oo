@@ -16,8 +16,7 @@ Alarm.getAlarmMethod = function(name, useCallback = true) {
   else if (typeof(alarmMethod) !== "function")
     throw new TypeError("'Alarms." + name + "' is not a function");
   
-  if (self.browser || !useCallback)
-    return alarmMethod;
+  if (!useCallback) return alarmMethod;
   return WebExtension.getAPIMethodAsPromise(alarmMethod);
 };
 

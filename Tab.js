@@ -36,8 +36,6 @@ Tab.getTabMethod = function(name) {
   else if (typeof(tabMethod) !== "function")
     throw new TypeError("'Tabs." + name + "' is not a function");
 
-  if (self.browser)
-    return tabMethod;
   return WebExtension.apiMethodAsPromise(tabMethod);
 };
 
@@ -81,11 +79,9 @@ Tab.prototype.update = function(updateProperties) {
 Tab.prototype.getWindow = function(getInfo) {
   let windowId = this.windowId;
 
-  if (self.WindowManager)
-    return WindowManager.get(windowId, getInfo);
+  if (self.WindowManager) return WindowManager.get(windowId, getInfo);
 
   let windowMethod = WebExtension.getAPI('windows').get;
-  if (!self.browser)
-    windowMethod = WebExtension.apiMethodAsPromise(windowMethod);
+  windowMethod = WebExtension.apiMethodAsPromise(windowMethod);
   return windowMethod(windowId, getInfo);
 };
