@@ -1,10 +1,21 @@
+
 # WebExtensionLibs
+
+El archivo **WebExtension.js** debe ir antes que las APIs de extensión que quiera usar, ya que estas dependen de el. *Ejem*:
+
+```html
+<script src="/path/to/WebExtension.js"></script>
+<script src="/path/to/Alarm.js"></script>
+```
+
+ ## Índice
 
 * [Alarm](#alarm)
 * [Command](#command)
 * [Notification](#notification)
 * [StorageManager](#storagemanager)
 * [Tab](#tab)
+* [WebExtension](#webextension)
 * [WindowManager](#windowmanager)
 * [License](#license)
 
@@ -135,6 +146,17 @@ Tab.open({
 });
 // O desde una instancia de WindowManager.
 windowInfo.openTab({url: 'http://example.com/'});
+```
+
+## WebExtension
+
+El objeto *WebExtension* trae funciones para interactuar con las APIs para extensiones del navegador. *Ejem*:
+
+```javascript
+WebExtension.getAPI('commands');        // Retorna browser.commands,
+                                        // si no encuentra la API lanza un error.
+WebExtension.getAPI('commands', true);  // Retorna browser.commands,
+                                        // si no encuentra la API retorna null.
 ```
 
 ## WindowManager
