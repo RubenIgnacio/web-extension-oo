@@ -4,7 +4,7 @@ function WindowManager(windowInfo) {
 
   this.browserWindows = WebExtension.getAPI('windows');
 
-  if (windowInfo.tabs && window.Tab)
+  if (windowInfo.tabs && self.Tab)
     windowInfo.tabs = windowInfo.tabs.map((tab) => new Tab(tab));
 
   Object.assign(this, windowInfo);
