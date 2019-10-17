@@ -68,7 +68,7 @@ Tab.addEventListener = function(type, listener) {
 
 Tab.prototype.getTabMethod = Tab.getTabMethod;
 
-["executeScript", "insertCSS"].forEach(function(methodName) {
+['executeScript', 'insertCSS', 'removeCSS'].forEach(function(methodName) {
   Tab.prototype[methodName] = function(details) {
     return this.getTabMethod(methodName)(this.id, details);
   };
@@ -77,6 +77,7 @@ Tab.prototype.getTabMethod = Tab.getTabMethod;
 Tab.prototype.close = function() {
   return Tab.close(this.id);
 };
+
 Tab.prototype.update = function(updateProperties) {
   return this.getTabMethod("update")(this.id, updateProperties).then((tabInfo) => Object.assign(this, tabInfo));
 };
