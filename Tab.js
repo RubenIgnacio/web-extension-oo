@@ -69,7 +69,7 @@ Tab.prototype.getTabMethod = Tab.getTabMethod;
 });
 
 Tab.prototype.close = function() {
-  return this.getTabMethod("remove")(this.id);
+  return Tab.close(this.id);
 };
 
 Tab.prototype.update = function(updateProperties) {
