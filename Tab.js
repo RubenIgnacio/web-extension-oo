@@ -22,8 +22,6 @@ Tab.ZoomSettingsMode = Tab.browserTabs.ZoomSettingsMode;
 
 Tab.ZoomSettingsScope = Tab.browserTabs.ZoomSettingsScope;
 
-Tab.ZoomSettings = Tab.browserTabs.ZoomSettings;
-
 Tab.TAB_ID_NONE = Tab.browserTabs.TAB_ID_NONE;
 
 Tab.getTabMethod = function(name) {
