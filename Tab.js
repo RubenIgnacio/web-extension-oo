@@ -14,8 +14,6 @@ Tab.browserTabs = WebExtension.getAPI('tabs', true);
 
 Tab.MutedInfoReason = Tab.browserTabs.MutedInfoReason;
 
-Tab.MutedInfo = Tab.browserTabs.MutedInfo;
-
 Tab.TabStatus = Tab.browserTabs.TabStatus;
 
 Tab.WindowType = Tab.browserTabs.WindowType;
