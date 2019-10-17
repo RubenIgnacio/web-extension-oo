@@ -51,8 +51,14 @@ Tab.getCurrent = function() {
   return Tab.getTabMethod("getCurrent")().then((tabInfo) => new Tab(tabInfo));
 };
 
+Tab.query = function(queryInfo = {}) {
+  return Tab.getTabMethod('query')(queryInfo).then(
+    (tabs) => tabs.map((tab) => new Tab(tab))
+  );
+};
+
 Tab.close = function(tabIds) {
-  return this.getTabMethod("remove")(tabIds);
+  return Tab.getTabMethod("remove")(tabIds);
 };
 
 Tab.addEventListener = function(type, listener) {
@@ -71,7 +77,6 @@ Tab.prototype.getTabMethod = Tab.getTabMethod;
 Tab.prototype.close = function() {
   return Tab.close(this.id);
 };
-
 Tab.prototype.update = function(updateProperties) {
   return this.getTabMethod("update")(this.id, updateProperties).then((tabInfo) => Object.assign(this, tabInfo));
 };
