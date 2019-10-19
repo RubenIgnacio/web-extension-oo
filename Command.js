@@ -2,11 +2,11 @@ function Command(options) {
   if (!(this instanceof Command))
     return new Command(options);
 
-  this.browserCommand = WebExtension.getAPI('commands');
+  this.browserCommand = Command.browserCommand;
   Object.assign(this, options);
 }
 
-Command.browserCommand = WebExtension.getAPI('commands', true);
+Command.browserCommand = WebExtension.getAPI('commands');
 
 Command.getCommandMethod = function(name) {
   let commandMethod = Command.browserCommand[name];

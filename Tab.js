@@ -2,7 +2,7 @@ function Tab(tabInfo) {
   if (!(this instanceof Tab))
     return new Tab(tabInfo);
 
-  this.browserTabs = WebExtension.getAPI('tabs');
+  this.browserTabs = Tab.browserTabs;
 
   if (tabInfo.url)
     tabInfo.url = new URL(tabInfo.url);
@@ -10,7 +10,7 @@ function Tab(tabInfo) {
   Object.assign(this, tabInfo);
 }
 
-Tab.browserTabs = WebExtension.getAPI('tabs', true);
+Tab.browserTabs = WebExtension.getAPI('tabs');
 
 Tab.MutedInfoReason = Tab.browserTabs.MutedInfoReason;
 

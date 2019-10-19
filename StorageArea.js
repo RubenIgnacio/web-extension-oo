@@ -2,11 +2,11 @@ function StorageArea(defaultStorageAreaType) {
   if (!(this instanceof StorageArea))
     return new StorageArea(defaultStorageAreaType);
 
-  this.browserStorage = WebExtension.getAPI('storage');
+  this.browserStorage = StorageArea.browserStorage;
   this.setDefaultStorageAreaType(defaultStorageAreaType);
 }
 
-StorageArea.browserStorage = WebExtension.getAPI('storage', true);
+StorageArea.browserStorage = WebExtension.getAPI('storage');
 
 StorageArea.StorageAreaType = {LOCAL: 'local', SYNC: 'sync', MANAGED: 'managed'};
 

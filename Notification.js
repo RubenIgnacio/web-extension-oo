@@ -2,7 +2,7 @@ function Notification(notificationId, options) {
   if (!(this instanceof Notification))
     return new Notification(notificationId, options);
 
-  this.browserNotifications = WebExtension.getAPI('notifications');
+  this.browserNotifications = Notification.browserNotifications;
 
   if (!notificationId && (!options || !options.title))
     throw new Error("You have not specified an 'id' or 'title' for the notification, you must specify at least one of them.");
@@ -42,7 +42,7 @@ function Notification(notificationId, options) {
   Object.defineProperty(this, "clearedId", {writable: true});
 }
 
-Notification.browserNotifications = WebExtension.getAPI('notifications', true);
+Notification.browserNotifications = WebExtension.getAPI('notifications');
 
 Notification.TemplateType = Notification.browserNotifications.TemplateType;
 

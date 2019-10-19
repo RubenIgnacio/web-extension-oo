@@ -2,11 +2,11 @@ function Alarm(alarmInfo) {
   if (!(this instanceof Alarm))
     return new Alarm(alarmInfo);
 
-  this.browserAlarm = WebExtension.getAPI('alarms');
+  this.browserAlarm = Alarm.browserAlarm;
   Object.assign(this, alarmInfo);
 }
 
-Alarm.browserAlarm = WebExtension.getAPI('alarms', true);
+Alarm.browserAlarm = WebExtension.getAPI('alarms');
 
 Alarm.getAlarmMethod = function(name, useCallback = true) {
   let alarmMethod = Alarm.browserAlarm[name];

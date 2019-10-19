@@ -7,7 +7,7 @@ El archivo **WebExtension.js** debe ir antes que las APIs de extensión que quie
 <script src="/path/to/Alarm.js"></script>
 ```
 
- ## Índice
+## Índice
 
 * [Alarm](#alarm)
 * [Command](#command)
