@@ -31,10 +31,6 @@ Command.get = function(name) {
   });
 };
 
-Command.reset = function(name) {
-  return Command.getCommandMethod("reset")(name);
-};
-
 Command.update = function(details) {
   return Command.getCommandMethod("update")(details);
 };
@@ -53,7 +49,7 @@ Command.prototype.reload = function() {
 };
 
 Command.prototype.reset = function() {
-  return Command.reset(this.name).then(() => this.reload());
+  return this.getCommandMethod('reset')(this.name).then(() => this.reload());
 };
 
 Command.prototype.update = function(details) {
