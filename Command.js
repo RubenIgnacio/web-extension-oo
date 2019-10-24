@@ -44,8 +44,10 @@ Command.addEventListener = function(type, listener) {
   event.addListener(listener);
 };
 
+Command.prototype.getCommandMethod = Command.getCommandMethod;
+
 Command.prototype.reload = function() {
-  Command.getCommandMethod("getAll")().then((commands) => {
+  this.getCommandMethod('getAll')().then((commands) => {
     return commands.find((command) => command.name === this.name);
   }).then((command) => Object.assign(this, command));
 };
