@@ -31,10 +31,6 @@ Command.get = function(name) {
   });
 };
 
-Command.update = function(details) {
-  return Command.getCommandMethod("update")(details);
-};
-
 Command.addEventListener = function(type, listener) {
   let event = WebExtension.getAPIEvent(Command.browserCommand, type);
   event.addListener(listener);
@@ -54,5 +50,5 @@ Command.prototype.reset = function() {
 
 Command.prototype.update = function(details) {
   details.name = this.name;
-  return Command.update(details).then(() => { Object.assign(this, details) });
+  return this.getCommandMethod('update')(details).then(() => this.reload());
 };
