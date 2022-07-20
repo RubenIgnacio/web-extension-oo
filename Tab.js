@@ -1,11 +1,13 @@
 function Tab(tabInfo) {
-  if (!(this instanceof Tab))
+  if (!(this instanceof Tab)) {
     return new Tab(tabInfo);
+  }
 
   this.browserTabs = Tab.browserTabs;
 
-  if (tabInfo.url)
+  if (tabInfo.url) {
     tabInfo.url = new URL(tabInfo.url);
+  }
 
   Object.assign(this, tabInfo);
 }
@@ -25,26 +27,28 @@ Tab.ZoomSettingsScope = Tab.browserTabs.ZoomSettingsScope;
 Tab.TAB_ID_NONE = Tab.browserTabs.TAB_ID_NONE;
 
 Tab.getTabMethod = function(name) {
-  var tabMethod = Tab.browserTabs[name];
+  const tabMethod = Tab.browserTabs[name];
 
-  if (!tabMethod)
-    throw new Error("Your browser does not support 'Tabs." + name + "()'.");
-  else if (typeof(tabMethod) !== "function")
-    throw new TypeError("'Tabs." + name + "' is not a function");
-
+  if (!tabMethod) {
+    throw new Error(`Your browser does not support 'Tabs.${name}()'.`);
+  } else if (typeof(tabMethod) !== 'function') {
+    throw new TypeError(`'Tabs.${name}' is not a function`);
+  }
   return WebExtension.apiMethodAsPromise(tabMethod);
 };
 
 Tab.open = function(createProperties) {
-  return Tab.getTabMethod("create")(createProperties).then((tabInfo) => new Tab(tabInfo));
+  return Tab.getTabMethod('create')(createProperties).then(
+    (tabInfo) => new Tab(tabInfo)
+  );
 };
 
 Tab.get = function(tabId) {
-  return Tab.getTabMethod("get")(tabId).then((tabInfo) => new Tab(tabInfo));
+  return Tab.getTabMethod('get')(tabId).then((tabInfo) => new Tab(tabInfo));
 };
 
 Tab.getCurrent = function() {
-  return Tab.getTabMethod("getCurrent")().then((tabInfo) => new Tab(tabInfo));
+  return Tab.getTabMethod('getCurrent')().then((tabInfo) => new Tab(tabInfo));
 };
 
 Tab.query = function(queryInfo = {}) {
@@ -54,11 +58,12 @@ Tab.query = function(queryInfo = {}) {
 };
 
 Tab.close = function(tabIds) {
-  return Tab.getTabMethod("remove")(tabIds);
+  return Tab.getTabMethod('remove')(tabIds);
 };
 
 Tab.addEventListener = function(type, listener) {
-  let event = WebExtension.getAPIEvent(Tab.browserTabs, type);
+  const event = WebExtension.getAPIEvent(Tab.browserTabs, type);
+
   event.addListener(listener);
 };
 
@@ -75,15 +80,17 @@ Tab.prototype.close = function() {
 };
 
 Tab.prototype.update = function(updateProperties) {
-  return this.getTabMethod("update")(this.id, updateProperties).then((tabInfo) => Object.assign(this, tabInfo));
+  return this.getTabMethod('update')(this.id, updateProperties).then(
+    (tabInfo) => Object.assign(this, tabInfo)
+  );
 };
 
 Tab.prototype.getWindow = function(getInfo) {
-  let windowId = this.windowId;
+  const windowId = this.windowId;
 
   if (self.WindowManager) return WindowManager.get(windowId, getInfo);
 
-  let windowMethod = WebExtension.getAPI('windows').get;
-  windowMethod = WebExtension.apiMethodAsPromise(windowMethod);
-  return windowMethod(windowId, getInfo);
+  const windowMethod = WebExtension.getAPI('windows').get;
+
+  return WebExtension.apiMethodAsPromise(windowMethod)(windowId, getInfo);
 };

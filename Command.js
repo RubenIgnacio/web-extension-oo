@@ -1,26 +1,28 @@
 function Command(options) {
-  if (!(this instanceof Command))
+  if (!(this instanceof Command)) {
     return new Command(options);
+  }
 
   this.browserCommand = Command.browserCommand;
+
   Object.assign(this, options);
 }
 
 Command.browserCommand = WebExtension.getAPI('commands');
 
 Command.getCommandMethod = function(name) {
-  let commandMethod = Command.browserCommand[name];
+  const commandMethod = Command.browserCommand[name];
   
-  if (!commandMethod)
-    throw new Error("Your browser does not support 'Commands." + name + "()'.");
-  else if (typeof(commandMethod) !== "function")
-    throw new TypeError("'Commands." + name + "' is not a function");
-  
+  if (!commandMethod) {
+    throw new Error(`Your browser does not support 'Commands.${name}()'.`);
+  } else if (typeof(commandMethod) !== 'function') {
+    throw new TypeError(`'Commands.${name}' is not a function`);
+  }
   return WebExtension.apiMethodAsPromise(commandMethod);
 };
 
 Command.getAll = function() {
-  return Command.getCommandMethod("getAll")().then(function(commands) {
+  return Command.getCommandMethod('getAll')().then(function(commands) {
     return commands.map((command) => new Command(command));
   });
 };
@@ -32,7 +34,8 @@ Command.get = function(name) {
 };
 
 Command.addEventListener = function(type, listener) {
-  let event = WebExtension.getAPIEvent(Command.browserCommand, type);
+  const event = WebExtension.getAPIEvent(Command.browserCommand, type);
+
   event.addListener(listener);
 };
 
@@ -50,5 +53,6 @@ Command.prototype.reset = function() {
 
 Command.prototype.update = function(details) {
   details.name = this.name;
+
   return this.getCommandMethod('update')(details).then(() => this.reload());
 };
