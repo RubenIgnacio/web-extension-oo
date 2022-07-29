@@ -48,7 +48,7 @@ StorageArea.prototype.getStorage = function(storageAreaType) {
   const storage = this.browserStorage[storageAreaType];
 
   if (!storage) {
-    throw new Error('Your browser does not support 'Storage.${storageAreaType}'.');
+    throw new Error(`Your browser does not support 'Storage.${storageAreaType}'.`);
   }
   return storage;
 };
