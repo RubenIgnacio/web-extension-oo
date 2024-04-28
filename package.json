@@ -1,0 +1,24 @@
+{
+  "name": "web-extension-oo",
+  "version": "1.0.0",
+  "description": "Una biblioteca para facilitar el desarrollo de extensiones de navegadores utilizando programación orientada a objetos en JavaScript.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ruben Ignacio",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RubenIgnacio/web-extension-oo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RubenIgnacio/web-extension-oo/issues"
+  },
+  "homepage": "https://github.com/RubenIgnacio/web-extension-oo",
+  "keywords": [
+    "browser",
+    "extension",
+    "web-extension",
+    "browser-extension"
+  ]
+}
