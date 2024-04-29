@@ -1,7 +1,7 @@
 {
   "name": "web-extension-oo",
   "version": "1.0.0",
-  "description": "Una biblioteca para facilitar el desarrollo de extensiones de navegadores utilizando programación orientada a objetos en JavaScript.",
+  "description": "Una biblioteca para facilitar el desarrollo de extensiones de navegadores utilizando POO.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
