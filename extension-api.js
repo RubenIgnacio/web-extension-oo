@@ -195,7 +195,7 @@ class ClassExtensionBase {
   }
 
   static addEventListener(type, listener) {
-    const event = ExtensionAPI.getAPIEvent(this.api, type);
+    const event = getAPIEvent(this.api, type);
 
     event.addListener(listener);
   }
@@ -204,6 +204,8 @@ class ClassExtensionBase {
     if (!this._api) {
       this._api = getAPI(this.apiName, this.metadata);
     }
+
+    return this._api;
   }
 
   assignFields(fields) {
