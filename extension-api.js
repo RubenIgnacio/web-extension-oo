@@ -202,7 +202,7 @@ class ClassExtensionBase {
 
   static get api() {
     if (!this._api) {
-      this._api = getAPI(this.apiName, this.metadata);
+      this._api = getAPI(this.apiName);
     }
 
     return this._api;
