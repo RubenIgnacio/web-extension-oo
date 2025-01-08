@@ -32,10 +32,6 @@ export default class Command extends ClassExtensionBase {
     });
   }
 
-  getAPIMethod(name) {
-    return this.constructor.getAPIMethod(name);
-  }
-
   reload() {
     const apiMethod = this.getAPIMethod('getAll');
 

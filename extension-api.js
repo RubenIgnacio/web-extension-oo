@@ -219,6 +219,10 @@ class ClassExtensionBase {
       }
     }
   }
+
+  getAPIMethod(name) {
+    return this.constructor.getAPIMethod(name);
+  }
 }
 
 export {
