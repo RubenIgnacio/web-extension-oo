@@ -1,4 +1,4 @@
-import { getAPI, ClassExtensionBase } from './extension-api';
+import { ClassExtensionBase } from './extension-api';
 
 export default class Alarm extends ClassExtensionBase {
   static metadata = {
