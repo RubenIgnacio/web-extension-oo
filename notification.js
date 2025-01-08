@@ -45,6 +45,8 @@ export default class Notification extends ClassExtensionBase {
   static defaultType = this.TemplateType.BASIC;
 
   constructor(notificationId, options) {
+    super();
+
     if (!notificationId && !options?.title) {
       throw new Error("You have not specified an 'id' or 'title' for the notification, you must specify at least one of them.");
     }

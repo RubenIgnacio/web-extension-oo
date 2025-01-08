@@ -11,6 +11,7 @@ export default class Command extends ClassExtensionBase {
   static fields = [ 'description', 'name', 'shortcut' ];
 
   constructor(options) {
+    super();
     this.assignFields(options);
   }
 

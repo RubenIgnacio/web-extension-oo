@@ -23,6 +23,7 @@ export default class Alarm extends ClassExtensionBase {
   static fields = ['name', 'delayInMinutes', 'periodInMinutes', 'when'];
 
   constructor(alarmInfo) {
+    super();
     this.assignFields(alarmInfo);
   }
 
