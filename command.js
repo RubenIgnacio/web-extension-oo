@@ -42,11 +42,7 @@ export default class Command extends ClassExtensionBase {
         throw new Error(`Command '${this.name}' was not found.`);
       }
 
-      for (const field of this.constructor.fields) {
-        if (field in command) {
-          this[field] = command[field];
-        }
-      }
+      this.assignFields(command);
     });
   }
 
