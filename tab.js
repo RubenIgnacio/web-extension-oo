@@ -189,7 +189,7 @@ export default class Tab extends ClassExtensionBase {
     const apiMethod = this.getAPIMethod('update');
 
     return apiMethod(this.id, updateProperties).then(
-      (tabInfo) => Object.assign(this, tabInfo)
+      (tabInfo) => this.assignFields(tabInfo)
     );
   }
 
