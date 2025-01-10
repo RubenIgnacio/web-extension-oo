@@ -175,16 +175,12 @@ class ClassExtensionBase {
   }
 
   static getAPIMethod(name) {
-    let apiMethod = this.api[name];
+    const apiMethod = this.api[name];
 
     if (!apiMethod) {
       throw new Error(`Your browser does not support '${this.name}.${name}()'.`);
     } else if (typeof apiMethod !== 'function') {
       throw new TypeError(`'${this.name}.${name}' is not a function`);
-    }
-
-    if (isCallbackApproach) {
-      apiMethod = [name];
     }
 
     return apiMethod;
