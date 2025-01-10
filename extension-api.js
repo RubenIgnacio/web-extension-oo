@@ -1,4 +1,6 @@
 const webBrowser = globalThis.browser || globalThis.chrome;
+const manifest = webBrowser.runtime.getManifest();
+const isCallbackApproach = globalThis.browser === undefined && manifest.manifest_version === 2;
 
 const makeCallback = (promise, metadata) => {
   return (...callbackArgs) => {
@@ -65,10 +67,11 @@ const wrapMethod = (target, method, wrapper) => {
 
 const hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty);
 
-const wrapAPI = (target, metadata = {}) => {
+const getProxyAPI = (target, metadata = {}) => {
   const cache = Object.create(null);
+  const proxyTarget = Object.create(target);
 
-  return new Proxy(Object.create(target), {
+  return new Proxy(proxyTarget, {
     has(_proxyTarget, prop) {
       return prop in target || prop in cache;
     },
@@ -92,10 +95,16 @@ const wrapAPI = (target, metadata = {}) => {
         } else {
           value = value.bind(target);
         }
-      } else if (typeof value === "object" && value !== null && hasOwnProperty(metadata, prop)) {
-        value = wrapAPI(value, metadata[prop]);
+      } else if (
+        typeof value === "object" &&
+        value !== null &&
+        hasOwnProperty(metadata, prop)
+      ) {
+
+        value = getProxyAPI(value, metadata[prop]);
       } else if (hasOwnProperty(metadata, "*")) {
-        value = wrapAPI(value, metadata["*"]);
+
+        value = getProxyAPI(value, metadata["*"]);
       } else {
         Object.defineProperty(cache, prop, {
           configurable: true,
@@ -132,22 +141,11 @@ const wrapAPI = (target, metadata = {}) => {
   });
 };
 
-const getAPI = (apiName, strict = true) => {
+const wrapAPI = (apiName, metadata) => {
   const api = webBrowser[apiName];
 
-  if (!api && strict) {
-    throw new Error(`Your browser does not support the '${apiName}' API.`);
-  }
-
-  return api;
-};
-
-const getProxyAPI = (apiName, metadata) => {
-  const api = getAPI(apiName);
-  const manifest = getAPI('runtime').getManifest();
-
-  if (globalThis.browser === undefined && manifest.manifest_version === 2) {
-    return wrapAPI(api, metadata);
+  if (isCallbackApproach) {
+    return getProxyAPI(api, metadata);
   }
 
   return api;
@@ -166,29 +164,27 @@ const getAPIEvent = (api, type) => {
 
 class ClassExtensionBase {
   static metadata = Object.create(null);
-  static _cache = Object.create(null);
   static fields = [];
 
-  static getAPIMethod(name) {
-    if (name in this._cache) {
-      return this._cache[name];
+  static get api() {
+    if (!this._api) {
+      this._api = wrapAPI(this.apiName, this.metadata);
     }
 
-    const manifest = getAPI('runtime').getManifest();
-    const className = this.name;
+    return this._api;
+  }
+
+  static getAPIMethod(name) {
     let apiMethod = this.api[name];
 
     if (!apiMethod) {
-      throw new Error(`Your browser does not support '${className}.${name}()'.`);
+      throw new Error(`Your browser does not support '${this.name}.${name}()'.`);
     } else if (typeof apiMethod !== 'function') {
-      throw new TypeError(`'${className}.${name}' is not a function`);
+      throw new TypeError(`'${this.name}.${name}' is not a function`);
     }
 
-    if (globalThis.browser === undefined && manifest.manifest_version === 2) {
-      const metadata = this.metadata[name];
-      const wrapper = wrapAsyncFunction(name, metadata);
-      apiMethod = wrapMethod(this.api, apiMethod, wrapper);
-      this._cache[name] = apiMethod;
+    if (isCallbackApproach) {
+      apiMethod = [name];
     }
 
     return apiMethod;
@@ -198,14 +194,6 @@ class ClassExtensionBase {
     const event = getAPIEvent(this.api, type);
 
     event.addListener(listener);
-  }
-
-  static get api() {
-    if (!this._api) {
-      this._api = getAPI(this.apiName);
-    }
-
-    return this._api;
   }
 
   assignFields(fields) {
@@ -226,7 +214,8 @@ class ClassExtensionBase {
 }
 
 export {
-  getAPI,
+  webBrowser,
+  isCallbackApproach,
   getProxyAPI,
   getAPIEvent,
   makeCallback,
