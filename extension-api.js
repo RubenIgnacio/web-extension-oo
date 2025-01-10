@@ -65,6 +65,10 @@ const wrapMethod = (target, method, wrapper) => {
   });
 };
 
+const isObject = (value) => {
+  return value !== null && typeof value === "object";
+};
+
 const hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty);
 
 const getProxyAPI = (target, metadata = {}) => {
@@ -95,11 +99,7 @@ const getProxyAPI = (target, metadata = {}) => {
         } else {
           value = value.bind(target);
         }
-      } else if (
-        typeof value === "object" &&
-        value !== null &&
-        hasOwnProperty(metadata, prop)
-      ) {
+      } else if (isObject(value) && hasOwnProperty(metadata, prop)) {
 
         value = getProxyAPI(value, metadata[prop]);
       } else if (hasOwnProperty(metadata, "*")) {
