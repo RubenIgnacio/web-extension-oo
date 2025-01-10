@@ -53,10 +53,6 @@ export default class Alarm extends ClassExtensionBase {
     return this.getAPIMethod('clearAll')();
   }
 
-  getAPIMethod(name) {
-    return this.constructor.getAPIMethod(name);
-  }
-
   clear() {
     return this.getAPIMethod('clear')(this.name);
   }

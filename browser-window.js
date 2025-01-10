@@ -94,10 +94,6 @@ export default class BrowserWindow extends ClassExtensionBase {
     return apiMethod(getInfo).then((windowInfo) => new this(windowInfo));
   }
 
-  getAPIMethod(name) {
-    return this.constructor.getAPIMethod(name);
-  }
-
   update(updateInfo) {
     const apiMethod = this.getAPIMethod('update');
 
