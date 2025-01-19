@@ -67,9 +67,7 @@ const wrapMethod = (target, method, wrapper) => {
   });
 };
 
-const isObject = (value) => {
-  return value !== null && typeof value === "object";
-};
+const isObject = (value) => value !== null && typeof value === "object";
 
 const hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty);
 
