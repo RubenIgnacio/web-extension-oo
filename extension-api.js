@@ -4,10 +4,11 @@ const isCallbackApproach = globalThis.browser === undefined && manifest.manifest
 
 const makeCallback = (promise, metadata) => {
   return (...callbackArgs) => {
+    const lastError = webBrowser.runtime.lastError;
     const singleCallbackArg = metadata.singleCallbackArg;
 
-    if (webBrowser.runtime.lastError) {
-      promise.reject(new Error(webBrowser.runtime.lastError.message));
+    if (lastError) {
+      promise.reject(new Error(lastError.message));
     } else if (singleCallbackArg || (callbackArgs.length <= 1 && singleCallbackArg !== false)) {
       promise.resolve(callbackArgs[0]);
     } else {
