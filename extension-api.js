@@ -4,10 +4,11 @@ const isCallbackApproach = globalThis.browser === undefined && manifest.manifest
 
 const makeCallback = (promise, metadata) => {
   return (...callbackArgs) => {
+    const singleCallbackArg = metadata.singleCallbackArg;
+
     if (webBrowser.runtime.lastError) {
       promise.reject(new Error(webBrowser.runtime.lastError.message));
-    } else if (metadata.singleCallbackArg ||
-                (callbackArgs.length <= 1 && metadata.singleCallbackArg !== false)) {
+    } else if (singleCallbackArg || (callbackArgs.length <= 1 && singleCallbackArg !== false)) {
       promise.resolve(callbackArgs[0]);
     } else {
       promise.resolve(callbackArgs);
@@ -209,14 +210,4 @@ class ClassExtensionBase {
   }
 }
 
-export {
-  webBrowser,
-  isCallbackApproach,
-  getProxyAPI,
-  getAPIEvent,
-  makeCallback,
-  wrapAsyncFunction,
-  wrapMethod,
-  wrapAPI,
-  ClassExtensionBase
-};
+export { webBrowser, wrapAPI, getAPIEvent, ClassExtensionBase };
