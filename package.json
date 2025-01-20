@@ -4,7 +4,9 @@
   "description": "Una biblioteca para facilitar el desarrollo de extensiones de navegadores utilizando POO.",
   "author": "Ruben Ignacio",
   "license": "MIT",
+  "main": "index.js",
   "exports": {
+    ".": "./index.js",
     "./extension-api": "./lib/extension-api.js"
   },
   "repository": {
