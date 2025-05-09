@@ -1,6 +1,6 @@
 {
   "name": "web-extension-oo",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Una biblioteca para facilitar el desarrollo de extensiones de navegadores utilizando POO.",
   "author": "Ruben Ignacio",
   "license": "MIT",
